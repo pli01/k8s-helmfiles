@@ -1,0 +1,74 @@
+---
+bases:
+  - ../../bases/helmDefaults.yaml
+  - ../../bases/environments.yaml
+
+---
+repositories:
+- name: ingress-nginx
+  url: https://kubernetes.github.io/ingress-nginx
+- name: prometheus-community
+  url: https://prometheus-community.github.io/helm-charts
+- name: grafana
+  url: https://grafana.github.io/helm-charts
+
+releases:
+#
+# ingress-nginx for public apps
+#
+- name: {{ .Values.ingress_nginx.name | quote }}
+  chart: ingress-nginx/ingress-nginx
+  version: {{ .Values.ingress_nginx | get "chart_version" nil | quote }}
+  namespace: {{ .Values.ingress_nginx.ingress_namespace }}
+  createNamespace: true
+  verify: false
+  missingFileHandler: Warn
+  installed: {{ .Values.ingress_nginx.installed }}
+  values:
+    - ingress-nginx-values.yaml.gotmpl
+    - "env/{{ .Environment.Name  }}-ingress-nginx-values.yaml.gotmpl"
+#
+# ingress-nginx-admin for private apps
+#
+- name: {{ .Values.ingress_nginx_admin.name | quote }}
+  chart: ingress-nginx/ingress-nginx
+  version: {{ .Values.ingress_nginx_admin | get "chart_version" nil | quote }}
+  namespace: {{ .Values.ingress_nginx_admin.ingress_namespace }}
+  createNamespace: true
+  installed: {{ .Values.ingress_nginx_admin.installed }}
+  values:
+    - ingress-nginx-admin-values.yaml.gotmpl
+
+- name: loki
+  chart: grafana/loki
+  version: {{ .Values.loki | get "chart_version" nil | quote }}
+  namespace: {{ .Values.loki.namespace }}
+  createNamespace: true
+  installed: {{ .Values.loki.installed }}
+  needs:
+    - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
+  values:
+    - loki-values.yaml.gotmpl
+
+- name: prometheus
+  chart: prometheus-community/kube-prometheus-stack
+  version: {{ .Values.prometheus | get "chart_version" nil | quote }}
+  namespace: {{ .Values.prometheus.namespace }}
+  createNamespace: true
+  installed: {{ .Values.prometheus.installed }}
+  needs:
+    - "{{ .Values.loki.namespace }}/loki"
+    - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
+  values:
+    - prometheus-values.yaml.gotmpl
+
+- name: promtail
+  chart: grafana/promtail
+  version: {{ .Values.promtail | get "chart_version" nil | quote }}
+  namespace: {{ .Values.promtail.namespace }}
+  createNamespace: true
+  installed: {{ .Values.promtail.installed }}
+  needs:
+    - "{{ .Values.loki.namespace }}/loki"
+  values:
+    - promtail-values.yaml.gotmpl

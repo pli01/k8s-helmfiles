@@ -1,0 +1,5 @@
+---
+helmDefaults:
+  atomic: true
+  wait: true
+  verify: false

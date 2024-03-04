@@ -1,0 +1,11 @@
+---
+bases:
+  - bases/helmDefaults.yaml
+  - bases/environments.yaml
+
+helmfiles:
+- path: releases/01-core/helmfile.yaml
+  values:
+  - {{ toYaml .Values | nindent 4 }}
+
+missingFileHandler: Warn

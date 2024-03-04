@@ -1,0 +1,90 @@
+{{- /*
+
+  See: https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
+
+*/ -}}
+
+prometheusOperator:
+{{- if hasKey .Values.prometheus "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).prometheus).node_selector | nindent 4 }}
+{{- else }}
+  nodeSelector: {}
+{{- end }}
+{{- if hasKey .Values.prometheus "tolerations" }}
+  tolerations: {{ toYaml ((.Values).prometheus).tolerations | nindent 4 }}
+{{- end }}
+
+kube-state-metrics:
+{{- if hasKey .Values.prometheus "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).prometheus).node_selector | nindent 4 }}
+{{- else }}
+  nodeSelector: {}
+{{- end }}
+{{- if hasKey .Values.prometheus "tolerations" }}
+  tolerations: {{ toYaml ((.Values).prometheus).tolerations | nindent 4 }}
+{{- end }}
+
+prometheus:
+  enabled: true
+  ingress:
+    enabled: true
+    ingressClassName: {{ .Values.prometheus.ingress_class | quote }}
+    annotations:
+      kubernetes.io/ingress.class: {{ .Values.prometheus.ingress_class | quote }}
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    hosts:
+      - {{ .Values.prometheus.prometheus_hostname | quote }}
+    paths: ['/']
+
+  prometheusSpec:
+    externalUrl: "http://{{ .Values.prometheus.prometheus_hostname }}"
+    routePrefix: /
+
+{{- if hasKey .Values.prometheus "node_selector" }}
+    nodeSelector: {{ toYaml ((.Values).prometheus).node_selector | nindent 6 }}
+{{- end }}
+{{- if hasKey .Values.prometheus "tolerations" }}
+    tolerations: {{ toYaml ((.Values).prometheus).tolerations | nindent 6 }}
+{{- end }}
+
+alertmanager:
+  ingress:
+    enabled: true
+    ingressClassName: {{ .Values.prometheus.ingress_class | quote }}
+    annotations:
+      kubernetes.io/ingress.class: {{ .Values.prometheus.ingress_class | quote }}
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    hosts:
+      - {{ .Values.prometheus.alertmanager_hostname | quote }}
+  alertmanagerSpec:
+    externalUrl: "http://{{ .Values.prometheus.alertmanager_hostname }}"
+
+    routePrefix: /
+{{- if hasKey .Values.prometheus "node_selector" }}
+    nodeSelector: {{ toYaml ((.Values).prometheus).node_selector | nindent 6 }}
+{{- end }}
+{{- if hasKey .Values.prometheus "tolerations" }}
+    tolerations: {{ toYaml ((.Values).prometheus).tolerations | nindent 6 }}
+{{- end }}
+
+grafana:
+  ingress:
+    enabled: true
+    ingressClassName: {{ .Values.prometheus.ingress_class | quote }}
+    annotations:
+      kubernetes.io/ingress.class: {{ .Values.prometheus.ingress_class | quote }}
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    hosts:
+      - {{ .Values.prometheus.grafana_hostname | quote }}
+{{- if hasKey .Values.prometheus "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).prometheus).node_selector | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.prometheus "tolerations" }}
+  tolerations: {{ toYaml ((.Values).prometheus).tolerations | nindent 4 }}
+{{- end }}
+
+  additionalDataSources:
+    - name: loki
+      type: loki
+      access: proxy
+      url: "http://loki.{{ .Values.loki | get "namespace" "default" }}.svc:3100"

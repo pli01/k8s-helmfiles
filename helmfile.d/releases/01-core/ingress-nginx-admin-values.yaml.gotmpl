@@ -1,0 +1,58 @@
+{{- /*
+
+  See: https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
+
+*/ -}}
+
+controller:
+  ingressClassResource:
+    name: {{ .Values.ingress_nginx_admin.ingress_class | quote }}
+    controllerValue: {{ .Values.ingress_nginx_admin.controller_value | quote }}
+  ingressClass: {{ .Values.ingress_nginx_admin.ingress_class | quote }}
+  kind: {{ .Values.ingress_nginx_admin.kind | quote }}
+  hostPort:
+    enabled: true
+    ports:
+      http: {{ .Values.ingress_nginx_admin.http }}
+      https: {{ .Values.ingress_nginx_admin.https }}
+  service:
+    enabled: true
+    type: NodePort
+    ports:
+      http: {{ .Values.ingress_nginx_admin.http }}
+      https: {{ .Values.ingress_nginx_admin.https }}
+  dnsPolicy: ClusterFirstWithHostNet
+  metrics:
+    enabled: false
+    serviceMonitor:
+      enabled: false
+  config:
+    use-forwarded-headers: "true"
+{{- if hasKey .Values.ingress_nginx_admin "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).ingress_nginx_admin).node_selector | nindent 4 }}
+{{- else }}
+  nodeSelector: {}
+{{- end }}
+{{- if hasKey .Values.ingress_nginx_admin "tolerations" }}
+  tolerations: {{ toYaml ((.Values).ingress_nginx_admin).tolerations | nindent 4 }}
+{{- end }}
+
+  admissionWebhooks:
+    patch:
+{{- if hasKey .Values.ingress_nginx_admin "node_selector" }}
+      nodeSelector: {{ toYaml ((.Values).ingress_nginx_admin).node_selector | nindent 8 }}
+{{- else }}
+      nodeSelector: {}
+{{- end }}
+{{- if hasKey .Values.ingress_nginx_admin "tolerations" }}
+      tolerations: {{ toYaml ((.Values).ingress_nginx_admin).tolerations | nindent 8 }}
+{{- end }}
+defaultBackend:
+{{- if hasKey .Values.ingress_nginx_admin "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).ingress_nginx_admin).node_selector | nindent 4 }}
+{{- else }}
+  nodeSelector: {}
+{{- end }}
+{{- if hasKey .Values.ingress_nginx_admin "tolerations" }}
+  tolerations: {{ toYaml ((.Values).ingress_nginx_admin).tolerations | nindent 4 }}
+{{- end }}

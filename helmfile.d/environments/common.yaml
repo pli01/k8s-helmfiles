@@ -1,0 +1,37 @@
+---
+ingress_nginx:
+  installed: false # true
+  chart_version: v4.9.1
+  name: "ingress-nginx"
+  ingress_class: "nginx"
+  ingress_namespace: "ingress-nginx"
+  kind: "DaemonSet"
+
+ingress_nginx_admin:
+  installed: false # true
+  chart_version: v4.9.1
+  name: "ingress-nginx-admin"
+  ingress_class: "nginx-admin"
+  ingress_namespace: "ingress-nginx-admin"
+  kind: "DaemonSet"
+  controller_value: "k8s.io/ingress-nginx-admin"
+  http: 80
+  https: 443
+
+loki:
+  installed: false # true
+  chart_version: 5.43.3
+  namespace: "loki"
+
+prometheus:
+  installed: false # true
+  chart_version: 56.14.0
+  namespace: "monitoring"
+  ingress_class: nginx
+  ingress_namespace: ingress-nginx
+  ingress_name: ingress-nginx
+
+promtail:
+  installed: false # true
+  chart_version: 6.15.5
+  namespace: "promtail"

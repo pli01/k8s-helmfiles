@@ -1,0 +1,11 @@
+---
+ingress_nginx:
+  installed: false
+ingress_nginx_admin:
+  installed: false
+loki:
+  installed: false
+prometheus:
+  installed: false
+promtail:
+  installed: false

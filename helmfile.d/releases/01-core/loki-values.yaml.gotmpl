@@ -1,0 +1,19 @@
+{{- /*
+
+  See: https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
+
+*/ -}}
+
+loki:
+  auth_enabled: false
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: 'filesystem'
+{{- if hasKey .Values.loki "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).loki).node_selector | nindent 4 }}
+{{- end }}
+  analytics:
+    reporting_enabled: false
+singleBinary:
+  replicas: 1

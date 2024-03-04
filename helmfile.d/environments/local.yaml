@@ -1,0 +1,21 @@
+---
+ingress_nginx:
+  installed: true
+  kind: "Deployment"
+
+loki:
+  installed: true
+
+promtail:
+  installed: true
+
+prometheus:
+  installed: true
+  grafana_hostname: grafana.127.0.0.1.nip.io
+  alertmanager_hostname: alertmanager.127.0.0.1.nip.io
+  prometheus_hostname: prometheus.127.0.0.1.nip.io
+
+  # define which ingress to use
+  ingress_class: nginx
+  ingress_namespace: ingress-nginx
+  ingress_name: ingress-nginx
