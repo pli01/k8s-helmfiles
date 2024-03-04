@@ -1,0 +1,14 @@
+---
+bases:
+  - ../../bases/helmDefaults.yaml
+  - ../../bases/environments.yaml
+
+---
+releases:
+- name: whoami
+  chart: ../../../charts/whoami
+  createNamespace: true
+  missingFileHandler: Warn
+  installed: {{ .Values | get "whoami.installed" "false" }}
+  values:
+    - whoami-values.yaml.gotmpl

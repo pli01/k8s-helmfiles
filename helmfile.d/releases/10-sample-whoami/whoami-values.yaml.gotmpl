@@ -1,0 +1,18 @@
+ingress:
+  enabled: true
+  className: {{ .Values.whoami.ingress_class | quote }}
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.whoami.ingress_class | quote }}
+{{- if hasKey .Values.whoami "whoami_hostname" }}
+  hosts:
+    - host: {{ .Values.whoami.whoami_hostname | quote }}
+      paths:
+        - path: /
+          pathType: Prefix
+{{- end }}
+{{- if hasKey .Values.whoami "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).whoami).node_selector | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.whoami "tolerations" }}
+  tolerations: {{ toYaml ((.Values).whoami).tolerations | nindent 4 }}
+{{- end }}

@@ -19,3 +19,8 @@ prometheus:
   ingress_class: nginx
   ingress_namespace: ingress-nginx
   ingress_name: ingress-nginx
+
+whoami:
+  installed: true
+  whoami_hostname: whoami.127.0.0.1.nip.io
+  ingress_class: nginx
