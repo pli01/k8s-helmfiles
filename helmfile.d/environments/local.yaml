@@ -1,7 +1,10 @@
 ---
 ingress_nginx:
   installed: true
+  # for local development cluster: Deployment is enough
   kind: "Deployment"
+  # for other cluster: DaemonSet is better (on pod to each node)
+  # kind: "DaemonSet"
 
 loki:
   installed: true
