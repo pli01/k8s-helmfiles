@@ -40,30 +40,33 @@ This directory contains 2 files:
 This directory contains values for each environments, and kubernetes target
 
 Files are loaded in following order and the last override the first.
-- `common.yaml`
+- `common.yaml`: is the common file loaded in all environement
 - `{{ environment }}.yaml`
 
-common.yaml: is the common file loaded in all environement
-default.yaml: is the default use by helmfile without any argument
-local.yaml: is a local environment, (based on KinD kubernetes target for example)
+Environments:
+- `default.yaml`: is the default use by helmfile without any argument
+- `local.yaml`: is a sample local environment, (based on KinD kubernetes target for example)
+- `dev.yaml`: is an other sample dev environment
 
 ```
-# example:  to deploy 'local' environement, use 
+# example:  to deploy one environment, for example 'local' use:
 helmfile -e local  sync
 ```
 
 #### releases
 Each subdirectory of `releases` contains 1 (or sometimes more!) release.
 
-Each helmfile in releases, define repository and releases dependencies, and values
+Each helmfile in releases, define helm repository and releases dependencies (helm charts), and values and secrets (for helm charts)
 
-`releases/01-core/`: contains minimal workload needed on default kubernetes target (ingress-nginx, observability stack)
+- `releases/01-core/`: contains minimal workload needed on default kubernetes target (ingress-nginx, observability stack)
+- `releases/10-sample-whoami/`: contains sample app workload , whoami
 
 ## Run it
 
 Prereq:
 - helm
 - helmfile (and dependencies)
+- sops/age
 - kubectl
 - kubernetes target
 
@@ -72,33 +75,43 @@ helmfile steps:
 
 This example, use local environment
 
-First deployment (needed to load some CRDS)
+- Lint files
+```
+helmfile -e local lint
+# or
+make lint
+```
+
+- Display templated files
+```
+helmfile -e local template
+```
+
+- First deployment (needed to load some CRDS)
 ```
 # first deployment, needed to load CRDS
 helmfile -e local sync
+# or
+make sync
 ```
 
-Deployment
+- Deployment
 ```
 helmfile -e local apply
+# or
+make apply
 ```
 
-Diff mode only
+- Diff mode only
 ```
 helmfile -e local diff
-```
-
-Lint files
-```
-helmfile -e local lint
-```
-
-Display templated files
-```
-helmfile -e local template
+# or
+make diff
 ```
 
 Destroy all resources
 ```
 helmfile -e local destroy
+# or
+make destroy
 ```

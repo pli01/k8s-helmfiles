@@ -61,6 +61,11 @@ releases:
     - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
   values:
     - prometheus-values.yaml.gotmpl
+#
+#  Uncomment to enable secrets values
+#
+#  secrets:
+#    - ../../../secrets/grafana-secrets.enc.yaml
 
 - name: promtail
   chart: grafana/promtail
