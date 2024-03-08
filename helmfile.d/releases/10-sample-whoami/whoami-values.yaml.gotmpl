@@ -3,6 +3,10 @@ ingress:
   className: {{ .Values.whoami.ingress_class | quote }}
   annotations:
     kubernetes.io/ingress.class: {{ .Values.whoami.ingress_class | quote }}
+{{- if hasKey .Values.whoami "annotations" }}
+    {{ toYaml ((.Values).whoami).annotations | nindent 4 }}
+{{- end }}
+
 {{- if hasKey .Values.whoami "whoami_hostname" }}
   hosts:
     - host: {{ .Values.whoami.whoami_hostname | quote }}

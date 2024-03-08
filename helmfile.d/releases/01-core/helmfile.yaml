@@ -65,7 +65,8 @@ releases:
 #  Uncomment to enable secrets values
 #
 #  secrets:
-#    - ../../../secrets/grafana-secrets.enc.yaml
+#     - ../../../secrets/grafana-secrets.enc.yaml
+#    - "../../../secrets/env/{{ .Environment.Name  }}/grafana-secrets.yaml.enc"
 
 - name: promtail
   chart: grafana/promtail

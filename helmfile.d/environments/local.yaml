@@ -3,12 +3,13 @@ ingress_nginx:
   installed: true
   # for local development cluster: Deployment is enough
   kind: "Deployment"
-  # for other cluster: DaemonSet is better (on pod to each node)
+  # for other cluster: DaemonSet is better (one pod to each node)
   # kind: "DaemonSet"
+  # certificate secret
+  # default_ssl_certificate: "127.0.0.1.nip.io"
 
 loki:
   installed: true
-
 promtail:
   installed: true
 
@@ -27,3 +28,8 @@ whoami:
   installed: true
   whoami_hostname: whoami.127.0.0.1.nip.io
   ingress_class: nginx
+#  annotations:
+#    nginx.ingress.kubernetes.io/auth-type: basic
+#    nginx.ingress.kubernetes.io/auth-secret: ingress-nginx/basic-auth
+#    nginx.ingress.kubernetes.io/auth-secret-type: auth-file
+#    nginx.ingress.kubernetes.io/auth-realm: "Progress Authentication"

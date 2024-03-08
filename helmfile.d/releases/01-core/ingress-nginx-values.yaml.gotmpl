@@ -20,6 +20,9 @@ controller:
       enabled: false
   config:
     use-forwarded-headers: "true"
+{{- if hasKey .Values.ingress_nginx "annotations" }}
+  annotations: {{ toYaml ((.Values).ingress_nginx).annotations | nindent 4 }}
+{{- end }}
 {{- if hasKey .Values.ingress_nginx "node_selector" }}
   nodeSelector: {{ toYaml ((.Values).ingress_nginx).node_selector | nindent 4 }}
 {{- else }}
@@ -28,7 +31,10 @@ controller:
 {{- if hasKey .Values.ingress_nginx "tolerations" }}
   tolerations: {{ toYaml ((.Values).ingress_nginx).tolerations | nindent 4 }}
 {{- end }}
-
+{{- if hasKey .Values.ingress_nginx "default_ssl_certificate" }}
+  extraArgs:
+    default-ssl-certificate: "{{ .Values.ingress_nginx.ingress_namespace }}/{{ .Values.ingress_nginx.default_ssl_certificate }}"
+{{- end }}
   admissionWebhooks:
     patch:
 {{- if hasKey .Values.ingress_nginx "node_selector" }}
