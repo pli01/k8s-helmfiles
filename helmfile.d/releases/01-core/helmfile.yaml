@@ -7,6 +7,8 @@ bases:
 repositories:
 - name: ingress-nginx
   url: https://kubernetes.github.io/ingress-nginx
+- name: jetstack
+  url: https://charts.jetstack.io
 - name: prometheus-community
   url: https://prometheus-community.github.io/helm-charts
 - name: grafana
@@ -39,6 +41,33 @@ releases:
   values:
     - ingress-nginx-admin-values.yaml.gotmpl
 
+- name: cert-manager
+  chart: jetstack/cert-manager
+  version: {{ .Values.cert_manager | get "chart_version" nil | quote }}
+  namespace: {{ .Values.cert_manager.namespace }}
+  createNamespace: true
+  missingFileHandler: Warn
+  installed: {{ .Values.cert_manager.installed }}
+  needs:
+    - "{{ .Values.cert_manager.ingress_namespace }}/{{ .Values.cert_manager.ingress_name }}"
+  values:
+    - cert-manager-values.yaml.gotmpl
+    - "env/{{ .Environment.Name  }}-cert-manager-values.yaml.gotmpl"
+
+- name: cert-manager-issuers
+  chart: ../../../charts/cert-manager-issuers
+  version: {{ .Values.cert_manager_issuer | get "chart_version" nil | quote }}
+  namespace: {{ .Values.cert_manager_issuer.namespace }}
+  createNamespace: true
+  missingFileHandler: Warn
+  installed: {{ .Values.cert_manager_issuer.installed }}
+  needs:
+    - "{{ .Values.cert_manager.namespace }}/cert-manager"
+  values:
+    - cert-manager-issuers-values.yaml.gotmpl
+    - "env/{{ .Environment.Name  }}-cert-manager-issuers-values.yaml.gotmpl"
+
+
 - name: loki
   chart: grafana/loki
   version: {{ .Values.loki | get "chart_version" nil | quote }}
@@ -56,6 +85,7 @@ releases:
   namespace: {{ .Values.prometheus.namespace }}
   createNamespace: true
   installed: {{ .Values.prometheus.installed }}
+  missingFileHandler: Warn
   needs:
     - "{{ .Values.loki.namespace }}/loki"
     - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
@@ -64,9 +94,8 @@ releases:
 #
 #  Uncomment to enable secrets values
 #
-#  secrets:
-#     - ../../../secrets/grafana-secrets.enc.yaml
-#    - "../../../secrets/env/{{ .Environment.Name  }}/grafana-secrets.yaml.enc"
+  secrets:
+    - "../../../secrets/env/{{ .Environment.Name  }}/grafana-secrets.yaml.enc"
 
 - name: promtail
   chart: grafana/promtail

@@ -1,0 +1,13 @@
+---
+installCRDs: true
+crds:
+  enabled: true
+{{- if hasKey .Values.cert_manager "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).cert_manager).node_selector | nindent 4 }}
+{{- else }}
+  nodeSelector: {}
+{{- end }}
+{{- if hasKey .Values.cert_manager "tolerations" }}
+  tolerations: {{ toYaml ((.Values).cert_manager).tolerations | nindent 4 }}
+{{- end }}
+
