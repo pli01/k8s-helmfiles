@@ -25,7 +25,33 @@ prometheus:
   grafana_hostname: grafana.127.0.0.1.nip.io
   alertmanager_hostname: alertmanager.127.0.0.1.nip.io
   prometheus_hostname: prometheus.127.0.0.1.nip.io
-
+  prometheus:
+    annotations:
+      cert-manager.io/cluster-issuer: "ca-cluster-issuer"
+    tls:
+      - hosts:
+        - prometheus.127.0.0.1.nip.io
+        secretName: prometheus.127.0.0.1.nip.io
+    hosts:
+      - prometheus.127.0.0.1.nip.io
+  alertmanager:
+    annotations:
+      cert-manager.io/cluster-issuer: "ca-cluster-issuer"
+    tls:
+      - hosts:
+        - alertmanager.127.0.0.1.nip.io
+        secretName: alertmanager.127.0.0.1.nip.io
+    hosts:
+      - alertmanager.127.0.0.1.nip.io
+  grafana:
+    annotations:
+      cert-manager.io/cluster-issuer: "ca-cluster-issuer"
+    tls:
+      - hosts:
+        - grafana.127.0.0.1.nip.io
+        secretName: grafana.127.0.0.1.nip.io
+    hosts:
+      - grafana.127.0.0.1.nip.io
   # define which ingress to use
   ingress_class: nginx
   ingress_namespace: ingress-nginx

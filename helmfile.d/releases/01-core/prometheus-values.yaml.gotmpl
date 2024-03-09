@@ -32,8 +32,17 @@ prometheus:
     annotations:
       kubernetes.io/ingress.class: {{ .Values.prometheus.ingress_class | quote }}
       nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    hosts:
-      - {{ .Values.prometheus.prometheus_hostname | quote }}
+{{- if hasKey .Values.prometheus "prometheus" }}
+{{- if hasKey .Values.prometheus.prometheus "annotations" }}
+      {{ toYaml ((.Values).prometheus).prometheus.annotations | nindent 6 }}
+{{- end }}
+{{- if hasKey .Values.prometheus.prometheus "tls" }}
+    tls: {{ toYaml ((.Values).prometheus.prometheus).tls | nindent 6 }}
+{{- end }}
+{{- if hasKey .Values.prometheus.prometheus "hosts" }}
+    hosts: {{ toYaml ((.Values).prometheus.prometheus).hosts | nindent 6 }}
+{{- end }}
+{{- end }}
     paths: ['/']
 
   prometheusSpec:
@@ -54,8 +63,17 @@ alertmanager:
     annotations:
       kubernetes.io/ingress.class: {{ .Values.prometheus.ingress_class | quote }}
       nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    hosts:
-      - {{ .Values.prometheus.alertmanager_hostname | quote }}
+{{- if hasKey .Values.prometheus "alertmanager" }}
+{{- if hasKey .Values.prometheus.alertmanager "annotations" }}
+      {{ toYaml ((.Values).prometheus).alertmanager.annotations | nindent 6 }}
+{{- end }}
+{{- if hasKey .Values.prometheus.alertmanager "tls" }}
+    tls: {{ toYaml ((.Values).prometheus.alertmanager).tls | nindent 6 }}
+{{- end }}
+{{- if hasKey .Values.prometheus.alertmanager "hosts" }}
+    hosts: {{ toYaml ((.Values).prometheus.alertmanager).hosts | nindent 6 }}
+{{- end }}
+{{- end }}
   alertmanagerSpec:
     externalUrl: "http://{{ .Values.prometheus.alertmanager_hostname }}"
 
@@ -74,8 +92,17 @@ grafana:
     annotations:
       kubernetes.io/ingress.class: {{ .Values.prometheus.ingress_class | quote }}
       nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    hosts:
-      - {{ .Values.prometheus.grafana_hostname | quote }}
+{{- if hasKey .Values.prometheus "grafana" }}
+{{- if hasKey .Values.prometheus.grafana "annotations" }}
+      {{ toYaml ((.Values).prometheus).grafana.annotations | nindent 6 }}
+{{- end }}
+{{- if hasKey .Values.prometheus.grafana "tls" }}
+    tls: {{ toYaml ((.Values).prometheus.grafana).tls | nindent 6 }}
+{{- end }}
+{{- if hasKey .Values.prometheus.grafana "hosts" }}
+    hosts: {{ toYaml ((.Values).prometheus.grafana).hosts | nindent 6 }}
+{{- end }}
+{{- end }}
 {{- if hasKey .Values.prometheus "node_selector" }}
   nodeSelector: {{ toYaml ((.Values).prometheus).node_selector | nindent 4 }}
 {{- end }}
