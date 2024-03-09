@@ -80,3 +80,6 @@ whoami:
 #    nginx.ingress.kubernetes.io/auth-secret: ingress-nginx/basic-auth
 #    nginx.ingress.kubernetes.io/auth-secret-type: auth-file
 #    nginx.ingress.kubernetes.io/auth-realm: "Progress Authentication"
+
+argocd:
+  installed: true

@@ -47,3 +47,11 @@ promtail:
   installed: false # true
   chart_version: 6.15.5
   namespace: "promtail"
+
+argocd:
+  installed: false # true
+  chart_version: 6.4.1
+  namespace: "argocd"
+  ingress_class: nginx
+  ingress_namespace: ingress-nginx
+  ingress_name: ingress-nginx
