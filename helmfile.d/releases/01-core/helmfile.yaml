@@ -121,3 +121,6 @@ releases:
     - "{{ .Values.argocd.ingress_namespace }}/{{ .Values.argocd.ingress_name }}"
   values:
     - argocd-values.yaml.gotmpl
+    - "env/{{ .Environment.Name  }}-argocd-values.yaml.gotmpl"
+  secrets:
+    - "../../../secrets/env/{{ .Environment.Name  }}/argocd-secrets.yaml.enc"
