@@ -58,7 +58,7 @@ app:
 - Generate passwd file 'my-auth-file': `user=password`
 ```
 echo "password1" | openssl passwd -apr1  -stdin |xargs printf "%s=%s\n" user1 |tee my-auth-file
-echo "password2" | openssl passwd -apr1  -stdin |xargs printf "%s=%s\n" user2 |tee my-auth-file
+echo "password2" | openssl passwd -apr1  -stdin |xargs printf "%s=%s\n" user2 |tee -a my-auth-file
 
 cat my-auth-file
 

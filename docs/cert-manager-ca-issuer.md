@@ -1,6 +1,7 @@
 # user cert-manager to generate TLS certificate
 
 For local and development purpose, we can use:
+- cert-manager with selfSigned Issuer, for bootstrapping a PKI localy or creating simple ad-hoc certificates for a quick test
 - cert-manager with CA Issuer and own root CA, when local url s not connected to internet (ex: 127.0.0.1.nip.io)
 - cert-manager with ACME (http01 or dns01) Letsencrypt, when url connected to internet
 

@@ -2,9 +2,11 @@
 
 Helms releases included:
 - ingress-nginx
+- cert-manager
+- cert-manager-issuers
 - loki
 - promtail
-- prometheus and grafana
+- prometheus, grafana, alertmanager
 
 Needs Dependencies:
 - loki need ingress
