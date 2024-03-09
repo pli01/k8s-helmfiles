@@ -1,17 +1,41 @@
 issuers: []
 clusterIssuers: []
-#clusterIssuer:
-#  ca:
-#    name: ca-issuer
-#    secretName: ca-key-pair
-#
-# TODO:
-#clusterIssuer:
-#  acme:
-#    name: letsencrypt-staging
-#    server: https://acme-staging-v02.api.letsencrypt.org/directory
-#    email: myemail@domain.com
-#    solvers:
-#      - http01:
-#          ingress:
-#            ingressClassName: nginx
+#clusterIssuers:
+#   - metadata:
+#      name: selfsigned-cluster-issuer
+#    spec:
+#      selfSigned: {}
+#  - metadata:
+#      name: ca-cluster-issuer
+#    spec:
+#      ca:
+#        secretName: ca-key-pair
+#  - metadata:
+#      name: letsencrypt-staging
+#    spec:
+#      acme:
+#        server: https://acme-staging-v02.api.letsencrypt.org/directory
+#        email: myemail@domain.com
+#        privateKeySecretRef:
+#          name: letsencrypt-staging
+#        solvers:
+#            - http01:
+#                ingress:
+#                  ingressClassName: nginx
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+
+

@@ -1,4 +1,7 @@
-clusterIssuer:
-  ca:
-    name: ca-issuer
-    secretName: ca-key-pair
+---
+{{- if hasKey .Values.cert_manager_issuer "issuers" }}
+issuers: {{ toYaml ((.Values).cert_manager_issuer).issuers | nindent 2 }}
+{{- end }}
+{{- if hasKey .Values.cert_manager_issuer "clusterIssuers" }}
+clusterIssuers: {{ toYaml ((.Values).cert_manager_issuer).clusterIssuers | nindent 2 }}
+{{- end }}
