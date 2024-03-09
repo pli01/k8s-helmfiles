@@ -28,7 +28,7 @@ A top-level helmfile directory, contains dependencies release files and director
 All the yaml files under the specified directory are processed in the alphabetical order.
 Each files defines an ordered list of  releases to deploy.
 
-- 01-core-apps.yaml: for core applications (example ingress, observability, ...)
+- 01-core-apps.yaml: for core applications (example ingress, observability, cert-manager...)
 - 02-sample-apps.yaml: other applications
 
 #### bases
@@ -58,8 +58,8 @@ Each subdirectory of `releases` contains 1 (or sometimes more!) release.
 
 Each helmfile in releases, define helm repository and releases dependencies (helm charts), and values and secrets (for helm charts)
 
-- `releases/01-core/`: contains minimal workload needed on default kubernetes target (ingress-nginx, observability stack)
-- `releases/10-sample-whoami/`: contains sample app workload , whoami
+- `releases/01-core/`: contains minimal workload needed on kubernetes target (ingress-nginx, observability stack)
+- `releases/10-sample-whoami/`: contains sample app workload, whoami
 
 ## Run it
 
@@ -73,45 +73,52 @@ Prereq:
 
 helmfile steps:
 
-This example, use local environment
+This example, deploy helmfile releases in a local kubernetes environment
 
 - Lint files
 ```
-helmfile -e local lint
-# or
 make lint
+# or
+helmfile -e local lint
 ```
-
 - Display templated files
 ```
+make template
+# or
 helmfile -e local template
 ```
 
+- (Local env): import local root CA, to generate TLS certificate
+```
+make local-root-ca
+```
+
 - First deployment (needed to load some CRDS)
+
 ```
 # first deployment, needed to load CRDS
-helmfile -e local sync
-# or
 make sync
+# or
+helmfile -e local sync
 ```
 
 - Deployment
 ```
-helmfile -e local apply
-# or
 make apply
+# or
+helmfile -e local apply
 ```
 
 - Diff mode only
 ```
-helmfile -e local diff
-# or
 make diff
+# or
+helmfile -e local diff
 ```
 
 Destroy all resources
 ```
-helmfile -e local destroy
-# or
 make destroy
+# or
+helmfile -e local destroy
 ```

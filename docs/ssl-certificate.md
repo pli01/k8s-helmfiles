@@ -1,8 +1,8 @@
-# Enable SSL certificate in ingress-nginx
+# Enable wild card SSL certificate in ingress-nginx
 
 Example:
 
-Generate self signed certificate for '127.0.0.1.nip.io' domain wildcard
+Generate self signed certificate for '127.0.0.1.nip.io' and wildcard '*.127.0.0.1.nip.io'
 
 - generate a certificate: here, self signed certificate with mkcert
 ```
@@ -44,7 +44,7 @@ data:
   tls.key: LS0t..........
 ```
 
-- In the ingress-nginx controller add config:
+- In the ingress-nginx controller, use default-ssl-certificate:
 
 ```
 controller:
