@@ -1,0 +1,17 @@
+issuers: []
+clusterIssuers: []
+#clusterIssuer:
+#  ca:
+#    name: ca-issuer
+#    secretName: ca-key-pair
+#
+# TODO:
+#clusterIssuer:
+#  acme:
+#    name: letsencrypt-staging
+#    server: https://acme-staging-v02.api.letsencrypt.org/directory
+#    email: myemail@domain.com
+#    solvers:
+#      - http01:
+#          ingress:
+#            ingressClassName: nginx

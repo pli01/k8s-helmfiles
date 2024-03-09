@@ -1,0 +1,10 @@
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ .Values.clusterIssuer.ca.name }}
+  labels:
+    {{- include "cert-manager-issuers.labels" . | nindent 4 }}
+spec:
+  ca:
+    secretName: {{ .Values.clusterIssuer.ca.secretName }}
