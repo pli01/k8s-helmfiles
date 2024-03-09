@@ -18,6 +18,18 @@ ingress_nginx_admin:
   http: 80
   https: 443
 
+cert_manager:
+  installed: false # true
+  chart_version: v1.14.4
+  namespace: "cert-manager"
+  ingress_class: "nginx"
+  ingress_name: ingress-nginx
+  ingress_namespace: ingress-nginx
+
+cert_manager_issuer:
+  installed: false # true
+  namespace: "cert-manager"
+
 loki:
   installed: false # true
   chart_version: 5.43.3

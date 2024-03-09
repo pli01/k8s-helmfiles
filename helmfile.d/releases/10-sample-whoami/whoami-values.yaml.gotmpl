@@ -7,12 +7,12 @@ ingress:
     {{ toYaml ((.Values).whoami).annotations | nindent 4 }}
 {{- end }}
 
-{{- if hasKey .Values.whoami "whoami_hostname" }}
-  hosts:
-    - host: {{ .Values.whoami.whoami_hostname | quote }}
-      paths:
-        - path: /
-          pathType: Prefix
+{{- if hasKey .Values.whoami "tls" }}
+  tls: {{ toYaml ((.Values).whoami).tls | nindent 4 }}
+{{- end }}
+
+{{- if hasKey .Values.whoami "hosts" }}
+  hosts: {{ toYaml ((.Values).whoami).hosts | nindent 4 }}
 {{- end }}
 {{- if hasKey .Values.whoami "node_selector" }}
   nodeSelector: {{ toYaml ((.Values).whoami).node_selector | nindent 4 }}
