@@ -29,8 +29,8 @@ releases:
   missingFileHandler: Warn
   installed: {{ .Values.ingress_nginx.installed }}
   values:
-    - ingress-nginx-values.yaml.gotmpl
-    - "env/{{ .Environment.Name }}/ingress-nginx-values.yaml.gotmpl"
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
 #
 # ingress-nginx-admin for private apps
 #
@@ -41,7 +41,8 @@ releases:
   createNamespace: true
   installed: {{ .Values.ingress_nginx_admin.installed }}
   values:
-    - ingress-nginx-admin-values.yaml.gotmpl
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
 
 - name: cert-manager
   chart: jetstack/cert-manager
@@ -53,8 +54,8 @@ releases:
   needs:
     - "{{ .Values.cert_manager.ingress_namespace }}/{{ .Values.cert_manager.ingress_name }}"
   values:
-    - cert-manager-values.yaml.gotmpl
-    - "env/{{ .Environment.Name }}/cert-manager-values.yaml.gotmpl"
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
 
 - name: cert-manager-issuers
   chart: ../../../charts/cert-manager-issuers
@@ -66,19 +67,21 @@ releases:
   needs:
     - "{{ .Values.cert_manager.namespace }}/cert-manager"
   values:
-    - cert-manager-issuers-values.yaml.gotmpl
-    - "env/{{ .Environment.Name }}/cert-manager-issuers-values.yaml.gotmpl"
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
 
 - name: loki
   chart: grafana/loki
   version: {{ .Values.loki | get "chart_version" nil | quote }}
   namespace: {{ .Values.loki.namespace }}
   createNamespace: true
+  missingFileHandler: Warn
   installed: {{ .Values.loki.installed }}
   needs:
     - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
   values:
-    - loki-values.yaml.gotmpl
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
 
 - name: prometheus
   chart: prometheus-community/kube-prometheus-stack
@@ -91,7 +94,8 @@ releases:
     - "{{ .Values.loki.namespace }}/loki"
     - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
   values:
-    - prometheus-values.yaml.gotmpl
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
 #
 #  Uncomment to enable secrets values
 #
@@ -103,11 +107,13 @@ releases:
   version: {{ .Values.promtail | get "chart_version" nil | quote }}
   namespace: {{ .Values.promtail.namespace }}
   createNamespace: true
+  missingFileHandler: Warn
   installed: {{ .Values.promtail.installed }}
   needs:
     - "{{ .Values.loki.namespace }}/loki"
   values:
-    - promtail-values.yaml.gotmpl
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
 
 - name: argocd
   chart: argo/argo-cd
@@ -120,7 +126,7 @@ releases:
     - "{{ .Values.argocd.ingress_namespace }}/{{ .Values.argocd.ingress_name }}"
     - "{{ .Values.cert_manager.namespace }}/cert-manager"
   values:
-    - argocd-values.yaml.gotmpl
-    - "env/{{ .Environment.Name  }}/argocd-values.yaml.gotmpl"
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
   secrets:
     - "../../../secrets/env/{{ .Environment.Name  }}/argocd-secrets.yaml.enc"
