@@ -12,6 +12,7 @@ concurrency:
 jobs:
   ci-test-helmfiles:
     strategy:
+      fail-fast: false
       matrix:
         # kubernetes releases
         k8s: [v1.27.11, v1.28.7, v1.29.2]
