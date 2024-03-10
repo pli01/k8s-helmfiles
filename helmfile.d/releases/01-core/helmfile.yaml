@@ -30,7 +30,7 @@ releases:
   installed: {{ .Values.ingress_nginx.installed }}
   values:
     - ingress-nginx-values.yaml.gotmpl
-    - "env/{{ .Environment.Name  }}-ingress-nginx-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/ingress-nginx-values.yaml.gotmpl"
 #
 # ingress-nginx-admin for private apps
 #
@@ -54,7 +54,7 @@ releases:
     - "{{ .Values.cert_manager.ingress_namespace }}/{{ .Values.cert_manager.ingress_name }}"
   values:
     - cert-manager-values.yaml.gotmpl
-    - "env/{{ .Environment.Name  }}-cert-manager-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/cert-manager-values.yaml.gotmpl"
 
 - name: cert-manager-issuers
   chart: ../../../charts/cert-manager-issuers
@@ -67,8 +67,7 @@ releases:
     - "{{ .Values.cert_manager.namespace }}/cert-manager"
   values:
     - cert-manager-issuers-values.yaml.gotmpl
-    - "env/{{ .Environment.Name  }}-cert-manager-issuers-values.yaml.gotmpl"
-
+    - "env/{{ .Environment.Name }}/cert-manager-issuers-values.yaml.gotmpl"
 
 - name: loki
   chart: grafana/loki
@@ -122,6 +121,6 @@ releases:
     - "{{ .Values.cert_manager.namespace }}/cert-manager"
   values:
     - argocd-values.yaml.gotmpl
-    - "env/{{ .Environment.Name  }}-argocd-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name  }}/argocd-values.yaml.gotmpl"
   secrets:
     - "../../../secrets/env/{{ .Environment.Name  }}/argocd-secrets.yaml.enc"
