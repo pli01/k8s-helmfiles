@@ -1,5 +1,7 @@
 # k8s-helmfiles
 
+[![[helmfiles releases]](https://github.com/pli01/k8s-helmfiles/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/pli01/k8s-helmfiles/actions/workflows/test.yaml)
+
 A monorepo for [Helm](https://helm.sh/) release configuration, managed by
 [Helmfile](https://github.com/helmfile/helmfile).
 
