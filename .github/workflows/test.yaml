@@ -1,0 +1,45 @@
+name: "[test workloads]"
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref_name }}-test-workloads"
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "install prereq"
+        run: |
+          echo "Install tooling"
+          git clone --depth=1 https://github.com/numerique-gouv/dk8s
+          ( cd dk8s &&
+             scripts/install-prereq.sh
+          ) || exit $?
+      - name: "Create local kubernetes cluster"
+        run: |
+          kind create cluster -n local --config ci/kind/local.yaml
+          kubectl get nodes -A
+
+      - name: test
+        run: |
+          echo "Lint files"
+          time make lint
+          echo "Install local root CA"
+          time make local-root-ca
+          echo "Sync releases"
+          time make sync
+          time make apply
+          echo "Destroy resources"
+          time make destroy
+      - name: Teardown
+        if: always()
+        run: |
+          echo "Destroy cluster"
+          kind delete clusters -A
