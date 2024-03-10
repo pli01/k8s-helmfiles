@@ -119,6 +119,7 @@ releases:
   installed: {{ .Values.argocd.installed }}
   needs:
     - "{{ .Values.argocd.ingress_namespace }}/{{ .Values.argocd.ingress_name }}"
+    - "{{ .Values.cert_manager.namespace }}/cert-manager"
   values:
     - argocd-values.yaml.gotmpl
     - "env/{{ .Environment.Name  }}-argocd-values.yaml.gotmpl"
