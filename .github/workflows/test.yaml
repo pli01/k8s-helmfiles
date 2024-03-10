@@ -21,13 +21,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Prerequisite installationsé
+      - name: "Prerequisite installations"
         run: |
           echo "install tooling"
-          git clone --depth=1 https://github.com/numerique-gouv/dk8s
-          ( cd dk8s &&
-             scripts/install-prereq.sh
-          ) || exit $?
+          ( curl -Ls https://raw.githubusercontent.com/numerique-gouv/dk8s/main/scripts/install-prereq.sh | bash ) || exit $?
+
       - name: lint
         run: |
           echo "lint files"
