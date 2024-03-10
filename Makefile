@@ -19,3 +19,6 @@ local-root-ca:
 	@echo "# import local root CA"
 	mkcert -install
 	./scripts/local-ca-root-issuer.sh
+
+ci-local-tests:
+	@./ci/tests//test-local-url.sh

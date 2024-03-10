@@ -70,10 +70,18 @@ Prereq:
 - kubectl
 - kubernetes target
 
+You can install all requirements from the following script hosted on https://github.com/numerique-gouv/dk8s
+
+```
+# download  and install all binaries in /usr/local/bin  (need sudo access)
+curl -Ls https://raw.githubusercontent.com/numerique-gouv/dk8s/main/scripts/install-prereq.sh | bash
+```
 
 helmfile steps:
 
 This example, deploy helmfile releases in a local kubernetes environment
+
+If needed, a Makefile is available as a wrapper to helmfile and "local" environment
 
 - Lint files
 ```
@@ -88,7 +96,7 @@ make template
 helmfile -e local template
 ```
 
-- (Local env): import local root CA, to generate TLS certificate
+- (Local env): generate and import a local root CA, to generate TLS certificates for all applications
 ```
 make local-root-ca
 ```
