@@ -1,4 +1,4 @@
-name: "[test workloads]"
+name: "[test helmfiles releases]"
 on:
   push:
     branches:
@@ -10,34 +10,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
+  ci-test-helmfiles:
+    strategy:
+      matrix:
+        # kubernetes releases
+        k8s: [v1.27.11, v1.28.7, v1.29.2]
+
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: "install prereq"
+      - name: "Prerequisite installationsé
         run: |
-          echo "Install tooling"
+          echo "install tooling"
           git clone --depth=1 https://github.com/numerique-gouv/dk8s
           ( cd dk8s &&
              scripts/install-prereq.sh
           ) || exit $?
-      - name: "Create local kubernetes cluster"
+      - name: lint
         run: |
-          kind create cluster -n local --config ci/kind/local.yaml
+          echo "lint files"
+          time make lint
+
+      - name: "Create local kubernetes ${{ matrix.k8s }} cluster"
+        run: |
+          kind create cluster -n local-${{ matrix.k8s }} --config ci/kind/local.yaml  --image=kindest/node:${{ matrix.k8s }}
           kubectl get nodes -A
 
-      - name: test
+      - name: Test on local environment
         run: |
-          echo "Lint files"
-          time make lint
           echo "Install local root CA"
           time make local-root-ca
           echo "Sync releases"
           time make sync
           time make apply
+          echo "Test local url"
+          time make ci-local-tests
           echo "Destroy resources"
           time make destroy
+
       - name: Teardown
         if: always()
         run: |
