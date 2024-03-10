@@ -44,6 +44,7 @@ jobs:
           echo "Sync releases"
           time make sync
           time make apply
+          helm list -A
           echo "Test local url"
           time make ci-local-tests
           echo "Destroy resources"
