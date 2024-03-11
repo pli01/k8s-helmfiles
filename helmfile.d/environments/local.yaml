@@ -57,6 +57,9 @@ prometheus:
   ingress_namespace: ingress-nginx
   ingress_name: ingress-nginx
 
+argocd:
+  installed: true
+
 whoami:
   installed: true
   ingress_class: nginx
@@ -80,6 +83,3 @@ whoami:
 #    nginx.ingress.kubernetes.io/auth-secret: ingress-nginx/basic-auth
 #    nginx.ingress.kubernetes.io/auth-secret-type: auth-file
 #    nginx.ingress.kubernetes.io/auth-realm: "Progress Authentication"
-
-argocd:
-  installed: true
