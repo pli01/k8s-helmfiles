@@ -1,4 +1,5 @@
 HELMFILE_ENVIRONMENT := local
+K8S_VERSION=v1.29.2
 
 lint: repos
 	@helmfile -e $(HELMFILE_ENVIRONMENT) lint
@@ -21,4 +22,8 @@ local-root-ca:
 	./scripts/local-ca-root-issuer.sh
 
 ci-local-tests:
-	@./ci/tests//test-local-url.sh
+	@./ci/tests/test-local-url.sh
+ci-bootstrap-local-cluster:
+	kind create cluster -n local-$(K8S_VERSION) --config ci/kind/local.yaml  --image=kindest/node:$(K8S_VERSION)
+ci-delete-local-cluster:
+	kind delete cluster -n local-$(K8S_VERSION)

@@ -34,7 +34,7 @@ jobs:
 
       - name: "Create local kubernetes ${{ matrix.k8s }} cluster"
         run: |
-          kind create cluster -n local-${{ matrix.k8s }} --config ci/kind/local.yaml  --image=kindest/node:${{ matrix.k8s }}
+          make ci-bootstrap-local-cluster K8S_VERSION=${{ matrix.k8s }}
           kubectl get nodes -A
 
       - name: Test on local environment
@@ -53,5 +53,5 @@ jobs:
       - name: Teardown
         if: always()
         run: |
-          echo "Destroy cluster"
-          kind delete clusters -A
+          echo "Destroy cluster ${{ matrix.k8s }}"
+          make ci-delete-local-cluster K8S_VERSION=${{ matrix.k8s }}
