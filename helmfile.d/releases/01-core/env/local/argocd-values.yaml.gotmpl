@@ -1,12 +1,6 @@
 ---
 global:
   domain: argocd.127.0.0.1.nip.io
-configs:
-  params:
-    server.insecure: true
-  secret:
-    argocdServerAdminPassword: $2b$10$WhRsvJswqhtqqkJucVckq.KFuX2nijmbiIcXbJOWeoYJbOsIqfH4a
-    argocdServerAdminPasswordMtime: "2023-12-01T10:11:12Z"
 server:
   ingress:
     enabled: true
@@ -14,10 +8,12 @@ server:
     annotations:
       cert-manager.io/cluster-issuer: "ca-cluster-issuer"
     ingressClassName: {{ .Values.argocd.ingress_class | quote }}
-
   certificate:
     enabled: true
     issuer:
       group: "cert-manager.io"
       kind: "ClusterIssuer"
       name: "ca-cluster-issuer"
+configs:
+  secret:
+    argocdServerAdminPassword: $2b$10$WhRsvJswqhtqqkJucVckq.KFuX2nijmbiIcXbJOWeoYJbOsIqfH4a
