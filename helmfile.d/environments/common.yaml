@@ -50,7 +50,7 @@ promtail:
 
 argocd:
   installed: false # true
-  chart_version: 6.4.1
+  chart_version: 6.7.2
   namespace: "argocd"
   ingress_class: nginx
   ingress_namespace: ingress-nginx
