@@ -83,6 +83,13 @@ releases:
     - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
     - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
 
+- name: prometheus-operator-crds
+  chart: prometheus-community/prometheus-operator-crds
+  version: {{ .Values.prometheus_operator_crds | get "chart_version" nil | quote }}
+  namespace: {{ .Values.prometheus_operator_crds.namespace }}
+  createNamespace: true
+  installed: {{ .Values.prometheus_operator_crds.installed }}
+
 - name: prometheus
   chart: prometheus-community/kube-prometheus-stack
   version: {{ .Values.prometheus | get "chart_version" nil | quote }}
@@ -91,6 +98,7 @@ releases:
   installed: {{ .Values.prometheus.installed }}
   missingFileHandler: Warn
   needs:
+    - "{{ .Values.prometheus_operator_crds.namespace }}/prometheus-operator-crds"
     - "{{ .Values.loki.namespace }}/loki"
     - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
   values:

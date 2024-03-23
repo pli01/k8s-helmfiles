@@ -35,6 +35,10 @@ loki:
   chart_version: 5.43.3
   namespace: "loki"
 
+prometheus_operator_crds:
+  installed: false # true
+  namespace: "monitoring"
+
 prometheus:
   installed: false # true
   chart_version: 57.1.1

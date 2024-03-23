@@ -20,6 +20,9 @@ loki:
 promtail:
   installed: true
 
+prometheus_operator_crds:
+  installed: true
+
 prometheus:
   installed: true
   grafana_hostname: grafana.127.0.0.1.nip.io
