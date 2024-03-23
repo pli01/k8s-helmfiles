@@ -42,7 +42,6 @@ jobs:
           echo "Install local root CA"
           time make local-root-ca
           echo "Sync releases"
-          time make sync
           time make apply
           helm list -A
           echo "Test local url"

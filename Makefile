@@ -12,7 +12,7 @@ diff:
 sync:
 	helmfile -e $(HELMFILE_ENVIRONMENT) sync
 apply:
-	helmfile -e $(HELMFILE_ENVIRONMENT) apply
+	helmfile -e $(HELMFILE_ENVIRONMENT) apply --skip-diff-on-install
 destroy:
 	helmfile -e $(HELMFILE_ENVIRONMENT) destroy
 
