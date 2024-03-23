@@ -1,4 +1,7 @@
 ---
+core_namespaces:
+  installed: true
+
 ingress_nginx:
   installed: true
   # for local development cluster: Deployment is enough
@@ -19,6 +22,9 @@ loki:
   installed: true
 promtail:
   installed: true
+
+prometheus_operator_crds:
+  installed: false
 
 prometheus:
   installed: true

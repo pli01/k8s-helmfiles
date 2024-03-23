@@ -1,0 +1,24 @@
+---
+templates:
+{{- range $namespace, $values := .Environment.Values.core_namespaces.namespaces }}
+  {{/* Don't mess with Kubernetes builtin namespaces while still allow to deploy to it */}}
+  {{ $isBuiltinNamespace := or (eq (hasPrefix "kube-" $namespace) true) (eq $namespace "default") }}
+  {{/* All builtin namespaces are system namespaces */}}
+  {{ $isSystemNamespace := $values | get "systemNamespace" $isBuiltinNamespace }}
+  {{- if eq $isBuiltinNamespace false }}
+    - |
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: {{ $namespace }}
+        {{- $labels := $values | get "labels" dict }}
+          {{- $labels := mergeOverwrite $labels (dict "kubernetes.io/metadata.name" $namespace) }}
+        {{- with $labels }}
+        labels:
+          name: {{ $namespace }}
+        {{- range $k, $v := . }}
+          {{ $k }}: {{ $v | quote }}
+        {{- end }}
+        {{- end }}
+  {{- end }}
+{{- end }}{{- /* end range namespaces */}}
