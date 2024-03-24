@@ -12,7 +12,7 @@ templates:
       metadata:
         name: {{ $namespace }}
         {{- $labels := $values | get "labels" dict }}
-          {{- $labels := mergeOverwrite $labels (dict "kubernetes.io/metadata.name" $namespace) }}                                                                      
+          {{- $labels := mergeOverwrite $labels (dict "kubernetes.io/metadata.name" $namespace) }}
         {{- with $labels }}
         labels:
         {{- range $k, $v := . }}
