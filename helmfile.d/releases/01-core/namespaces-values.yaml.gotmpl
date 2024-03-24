@@ -15,6 +15,7 @@ templates:
           {{- $labels := mergeOverwrite $labels (dict "kubernetes.io/metadata.name" $namespace) }}
         {{- with $labels }}
         labels:
+          name: {{ $namespace }}
         {{- range $k, $v := . }}
           {{ $k }}: {{ $v | quote }}
         {{- end }}

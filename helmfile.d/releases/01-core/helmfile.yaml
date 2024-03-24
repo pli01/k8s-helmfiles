@@ -75,6 +75,7 @@ releases:
   version: {{ .Values.cert_manager_issuer | get "chart_version" nil | quote }}
   namespace: {{ .Values.cert_manager_issuer.namespace }}
   createNamespace: true
+  verify: false
   missingFileHandler: Warn
   installed: {{ .Values.cert_manager_issuer.installed }}
   needs:
@@ -91,6 +92,7 @@ releases:
   missingFileHandler: Warn
   installed: {{ .Values.loki.installed }}
   needs:
+    - kube-system/namespaces
     - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
   values:
     - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
@@ -111,6 +113,7 @@ releases:
   installed: {{ .Values.prometheus.installed }}
   missingFileHandler: Warn
   needs:
+    - kube-system/namespaces
     - "{{ .Values.prometheus_operator_crds.namespace }}/prometheus-operator-crds"
     - "{{ .Values.loki.namespace }}/loki"
     - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
@@ -131,6 +134,7 @@ releases:
   missingFileHandler: Warn
   installed: {{ .Values.promtail.installed }}
   needs:
+    - kube-system/namespaces
     - "{{ .Values.loki.namespace }}/loki"
   values:
     - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
@@ -144,6 +148,7 @@ releases:
   missingFileHandler: Warn
   installed: {{ .Values.argocd.installed }}
   needs:
+    - kube-system/namespaces
     - "{{ .Values.argocd.ingress_namespace }}/{{ .Values.argocd.ingress_name }}"
     - "{{ .Values.cert_manager.namespace }}/cert-manager-issuers"
   values:
