@@ -24,7 +24,7 @@ promtail:
   installed: false # true
 
 prometheus_operator_crds:
-  installed: false
+  installed: false # true
 
 prometheus:
   installed: false # true
