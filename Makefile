@@ -6,7 +6,7 @@ lint: repos
 repos:
 	@helmfile -e $(HELMFILE_ENVIRONMENT) repos
 template:
-	@helmfile -e $(HELMFILE_ENVIRONMENT) template
+	@helmfile -e $(HELMFILE_ENVIRONMENT) template --include-crds
 diff:
 	@helmfile -e $(HELMFILE_ENVIRONMENT) diff
 sync:

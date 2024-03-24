@@ -1,4 +1,7 @@
 ---
+core_namespaces:
+  installed: true
+
 ingress_nginx:
   installed: true
   # for local development cluster: Deployment is enough
@@ -21,10 +24,10 @@ promtail:
   installed: false # true
 
 prometheus_operator_crds:
-  installed: false #true
+  installed: false
 
 prometheus:
-  installed: false #true
+  installed: false # true
   grafana_hostname: grafana.127.0.0.1.nip.io
   alertmanager_hostname: alertmanager.127.0.0.1.nip.io
   prometheus_hostname: prometheus.127.0.0.1.nip.io

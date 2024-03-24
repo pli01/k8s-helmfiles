@@ -18,6 +18,19 @@ repositories:
 
 releases:
 #
+# namespaces
+#
+- name: namespaces
+  chart: ../../../charts/raw
+  version: {{ .Values.core_namespaces | get "chart_version" nil | quote }}
+  namespace: kube-system
+  createNamespace: true
+  verify: false
+  missingFileHandler: Warn
+  installed: {{ .Values.core_namespaces.installed }}
+  values:
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+#
 # ingress-nginx for public apps
 #
 - name: {{ .Values.ingress_nginx.name | quote }}

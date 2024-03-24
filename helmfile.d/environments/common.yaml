@@ -1,4 +1,11 @@
 ---
+core_namespaces:
+  installed: false # true
+  namespaces:
+    loki: {}
+    monitoring: {}
+    promtail: {}
+
 ingress_nginx:
   installed: false # true
   chart_version: v4.9.1
