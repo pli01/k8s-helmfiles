@@ -1,6 +1,6 @@
 ---
 core_namespaces:
-  installed: false
+  installed: true
 
 ingress_nginx:
   installed: true
@@ -19,7 +19,7 @@ cert_manager_issuer:
   installed: true
 
 loki:
-  installed: true
+  installed: false
 promtail:
   installed: false
 

@@ -2,12 +2,12 @@
 core_namespaces:
   installed: false # true
   namespaces:
-    cert-manager: {}
-    ingress-nginx: {}
-    argocd: {}
+#    cert-manager: {}
+#    ingress-nginx: {}
+#    argocd: {}
     loki: {}
-    monitoring: {}
-    promtail: {}
+#    monitoring: {}
+#    promtail: {}
 
 ingress_nginx:
   installed: false # true
