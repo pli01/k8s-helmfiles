@@ -91,9 +91,9 @@ releases:
   createNamespace: true
   missingFileHandler: Warn
   installed: {{ .Values.loki.installed }}
-  needs:
+  # needs:
     # - kube-system/namespaces
-    - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
+    # - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
   values:
     - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
     - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"

@@ -19,7 +19,7 @@ cert_manager_issuer:
   installed: true
 
 loki:
-  installed: false
+  installed: true
 promtail:
   installed: false
 
