@@ -18,6 +18,12 @@ loki:
 singleBinary:
   replicas: 1
 
+monitoring:
+  selfMonitoring:
+    grafanaAgent:
+      annotations:
+        argocd.argoproj.io/hook: PreSync
+
 {{- /*
 test:
   enabled: false
