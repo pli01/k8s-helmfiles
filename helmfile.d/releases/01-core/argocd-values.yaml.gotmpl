@@ -28,6 +28,9 @@ configs:
               elif [[ -v ARGOCD_ENV_ENV_NAME ]]; then
                 HELMFILE_ARGS="$HELMFILE_ARGS -e $ARGOCD_ENV_ENV_NAME "
               fi
+              if [[ -v HELMFILE_FILE ]]; then
+                HELMFILE_ARGS="$HELMFILE_ARGS -f $HELMFILE_FILE "
+              fi
               helmfile $HELMFILE_ARGS template --include-crds -q
         lockRepo: false
 repoServer:
