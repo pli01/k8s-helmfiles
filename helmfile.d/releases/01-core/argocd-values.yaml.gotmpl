@@ -23,9 +23,9 @@ configs:
               set -x
               echoerr() { printf "%s\n" "$*" >&2; }
               echoerr "starting generate"
-              HELMFILE_ARGS=" --no-color --allow-no-matching-release "
+              HELMFILE_ARGS="helmfile --no-color --allow-no-matching-release "
               if [[ -v ARGOCD_APP_NAMESPACE ]]; then
-                HELMFILE_ARGS=" -n ${ARGOCD_APP_NAMESPACE} "
+                HELMFILE_ARGS="${HELMFILE_ARGS} -n ${ARGOCD_APP_NAMESPACE} "
               fi
               if [[ -v ENV_NAME ]]; then
                 HELMFILE_ARGS="${HELMFILE_ARGS} -e ${ENV_NAME} "
@@ -35,7 +35,7 @@ configs:
               if [[ -v HELMFILE_FILE ]]; then
                 HELMFILE_ARGS="${HELMFILE_ARGS} -f ${HELMFILE_FILE} "
               fi
-              helmfile ${HELMFILE_ARGS} -f helmfile.d/02-sample-apps.yaml template --include-crds --include-needs -q
+              ${HELMFILE_ARGS} template --include-crds --include-needs -q
 repoServer:
   extraContainers:
     - name: helmfile
