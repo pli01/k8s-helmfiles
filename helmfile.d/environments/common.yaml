@@ -8,6 +8,7 @@ core_namespaces:
     loki: {}
 #    monitoring: {}
 #    promtail: {}
+    whoami: {}
 
 ingress_nginx:
   installed: false # true
