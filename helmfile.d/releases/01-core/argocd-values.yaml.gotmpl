@@ -10,6 +10,7 @@ configs:
       helmfile:
         version: v1.0
         allowConcurrency: true
+        lockRepo: false
         init:
           command: [sh]
           args:
@@ -19,20 +20,22 @@ configs:
           command: [bash,-c]
           args:
             - |
-              HELMFILE_ARGS=""
+              set -x
+              echoerr() { printf "%s\n" "$*" >&2; }
+              echoerr "starting generate"
+              HELMFILE_ARGS=" --no-color --allow-no-matching-release "
               if [[ -v ARGOCD_APP_NAMESPACE ]]; then
-                HELMFILE_ARGS=" -n $ARGOCD_APP_NAMESPACE "
+                HELMFILE_ARGS=" -n ${ARGOCD_APP_NAMESPACE} "
               fi
               if [[ -v ENV_NAME ]]; then
-                HELMFILE_ARGS="$HELMFILE_ARGS -e $ENV_NAME "
+                HELMFILE_ARGS="${HELMFILE_ARGS} -e ${ENV_NAME} "
               elif [[ -v ARGOCD_ENV_ENV_NAME ]]; then
-                HELMFILE_ARGS="$HELMFILE_ARGS -e $ARGOCD_ENV_ENV_NAME "
+                HELMFILE_ARGS="${HELMFILE_ARGS} -e ${ARGOCD_ENV_ENV_NAME} "
               fi
               if [[ -v HELMFILE_FILE ]]; then
-                HELMFILE_ARGS="$HELMFILE_ARGS -f $HELMFILE_FILE "
+                HELMFILE_ARGS="${HELMFILE_ARGS} -f ${HELMFILE_FILE} "
               fi
-              helmfile $HELMFILE_ARGS template --include-crds -q
-        lockRepo: false
+              helmfile ${HELMFILE_ARGS} template --include-crds --include-needs -q
 repoServer:
   extraContainers:
     - name: helmfile
