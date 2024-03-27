@@ -1,0 +1,3 @@
+config:
+  clients:
+    - url: "http://loki.{{ .Values.loki | get "namespace" "default" }}.svc:3100/loki/api/v1/push"
