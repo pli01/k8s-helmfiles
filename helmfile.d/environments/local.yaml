@@ -21,13 +21,13 @@ cert_manager_issuer:
 loki:
   installed: true
 promtail:
-  installed: false
+  installed: true
 
 prometheus_operator_crds:
   installed: false
 
 prometheus:
-  installed: false
+  installed: true
   grafana_hostname: grafana.127.0.0.1.nip.io
   alertmanager_hostname: alertmanager.127.0.0.1.nip.io
   prometheus_hostname: prometheus.127.0.0.1.nip.io
@@ -67,7 +67,7 @@ argocd:
   installed: true
 
 whoami:
-  installed: false
+  installed: true
   ingress_class: nginx
   tls:
     - hosts:
