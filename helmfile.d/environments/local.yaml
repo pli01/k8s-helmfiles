@@ -67,7 +67,7 @@ argocd:
   installed: true
 
 whoami:
-  installed: false
+  installed: true
   ingress_class: nginx
   tls:
     - hosts:
