@@ -23,6 +23,7 @@ configs:
               set -x
               echoerr() { printf "%s\n" "$*" >&2; }
               echoerr "starting generate"
+              sleep 10
               HELMFILE_ARGS="helmfile --no-color --allow-no-matching-release "
               if [[ -v ARGOCD_APP_NAMESPACE ]]; then
                 HELMFILE_ARGS="${HELMFILE_ARGS} -n ${ARGOCD_APP_NAMESPACE} "
