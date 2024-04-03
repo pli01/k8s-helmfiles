@@ -1,0 +1,38 @@
+---
+bases:
+  - ../../bases/helmDefaults.yaml
+  - ../../bases/environments.yaml
+
+---
+repositories:
+- name: argo
+  url: https://argoproj.github.io/argo-helm
+
+releases:
+- name: argocd
+  chart: argo/argo-cd
+  version: {{ .Values.argocd | get "chart_version" nil | quote }}
+  namespace: {{ .Values.argocd.namespace }}
+  createNamespace: true
+  missingFileHandler: Warn
+  installed: {{ .Values.argocd.installed }}
+  values:
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+  secrets:
+    - "../../../secrets/env/{{ .Environment.Name  }}/argocd-secrets.yaml.enc"
+
+- name: extra-argocd
+  chart: ../../../charts/raw
+  version: {{ .Values.core_extra_argocd | get "chart_version" nil | quote }}
+  namespace: {{ .Values.core_extra_argocd.namespace }}
+  verify: false
+  missingFileHandler: Warn
+  installed: {{ .Values.core_extra_argocd.installed }}
+  needs:
+    - "{{ .Values.argocd.namespace }}/argocd"
+  values:
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+  secrets:
+    - "../../../secrets/env/{{ .Environment.Name  }}/{{`{{ .Release.Name }}`}}-secrets.yaml.enc"

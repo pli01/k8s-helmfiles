@@ -30,11 +30,13 @@ A top-level helmfile directory, contains dependencies release files and director
 All the yaml files under the specified directory are processed in the alphabetical order.
 Each files defines an ordered list of  releases to deploy.
 
-- 01-core-apps.yaml: for core applications (example ingress,cert-manager, argocd...)
-- 01-loki.yaml: logs aggregator
-- 01-prometheus-stack.yaml: observability (grafana,prometheus)
-- 01-promtail.yaml: logs shipping
+- 01-core-apps.yaml: for core applications (example ingress,cert-manager,...)
+- 02-argocd.yaml: argocd and app-of-apps
+- 03-loki.yaml: logs aggregator
+- 02-prometheus-stack.yaml: observability (grafana,prometheus)
+- 03-promtail.yaml: logs shipping
 - 02-sample-apps.yaml: other applications
+
 
 #### bases
 This directory contains 2 files:
@@ -64,7 +66,11 @@ Each subdirectory of `releases` contains 1 (or sometimes more!) release.
 Each helmfile in releases, define helm repository and releases dependencies (helm charts), and values and secrets (for helm charts)
 
 - `releases/01-core/`: contains minimal workload needed on kubernetes target (ingress-nginx, observability stack)
-- `releases/10-sample-whoami/`: contains sample app workload, whoami
+- `releases/argocd/`
+- `releases/loki/`
+- `releases/promtail/`
+- `releases/prometheus-stack/`
+- `releases/sample-whoami/`: contains sample app workload, whoami
 
 ## Run it
 

@@ -1,0 +1,25 @@
+---
+templates:
+    - |
+      apiVersion: argoproj.io/v1alpha1
+      kind: Application
+      metadata:
+        name: root-app
+        namespace: argocd
+        finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      spec:
+        destination:
+          namespace: argocd
+          name: in-cluster
+        project: default
+        source:
+          path: argocd-apps
+          repoURL: https://github.com/pli01/k8s-helmfiles.git
+          targetRevision: test-argo-helmfile
+        syncPolicy:
+          # disable automatic deployment
+          automated: {}
+          # enable automatic deployment
+          # automated:
+          #   selfHeal: true

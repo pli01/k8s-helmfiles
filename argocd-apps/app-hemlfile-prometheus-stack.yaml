@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-stack
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/pli01/k8s-helmfiles.git
+    targetRevision: test-argo-helmfile
+    path: .
+    plugin:
+      name: helmfile-v1.0
+      env:
+        - name: ENV_NAME
+          value: "local"
+        - name: HELMFILE_FILE
+          value: "helmfile.d/01-prometheus-stack.yaml"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

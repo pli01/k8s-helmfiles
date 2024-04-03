@@ -66,6 +66,9 @@ prometheus:
 argocd:
   installed: true
 
+core_extra_argocd:
+  installed: true
+
 whoami:
   installed: true
   ingress_class: nginx

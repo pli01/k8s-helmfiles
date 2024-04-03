@@ -1,0 +1,11 @@
+---
+bases:
+  - bases/helmDefaults.yaml
+  - bases/environments.yaml
+
+helmfiles:
+- path: releases/sample-whoami/helmfile.yaml
+  values:
+  - {{ toYaml .Values | nindent 4 }}
+
+missingFileHandler: Warn
