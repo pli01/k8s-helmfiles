@@ -9,14 +9,23 @@ repositories:
   url: https://kubernetes.github.io/ingress-nginx
 - name: jetstack
   url: https://charts.jetstack.io
-- name: prometheus-community
-  url: https://prometheus-community.github.io/helm-charts
-- name: grafana
-  url: https://grafana.github.io/helm-charts
 - name: argo
   url: https://argoproj.github.io/argo-helm
 
 releases:
+#
+# namespaces
+#
+- name: namespaces
+  chart: ../../../charts/raw
+  version: {{ .Values.core_namespaces | get "chart_version" nil | quote }}
+  namespace: kube-system
+  createNamespace: true
+  verify: false
+  missingFileHandler: Warn
+  installed: {{ .Values.core_namespaces.installed }}
+  values:
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
 #
 # ingress-nginx for public apps
 #
@@ -62,55 +71,11 @@ releases:
   version: {{ .Values.cert_manager_issuer | get "chart_version" nil | quote }}
   namespace: {{ .Values.cert_manager_issuer.namespace }}
   createNamespace: true
+  verify: false
   missingFileHandler: Warn
   installed: {{ .Values.cert_manager_issuer.installed }}
   needs:
     - "{{ .Values.cert_manager.namespace }}/cert-manager"
-  values:
-    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-
-- name: loki
-  chart: grafana/loki
-  version: {{ .Values.loki | get "chart_version" nil | quote }}
-  namespace: {{ .Values.loki.namespace }}
-  createNamespace: true
-  missingFileHandler: Warn
-  installed: {{ .Values.loki.installed }}
-  needs:
-    - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
-  values:
-    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-
-- name: prometheus
-  chart: prometheus-community/kube-prometheus-stack
-  version: {{ .Values.prometheus | get "chart_version" nil | quote }}
-  namespace: {{ .Values.prometheus.namespace }}
-  createNamespace: true
-  installed: {{ .Values.prometheus.installed }}
-  missingFileHandler: Warn
-  needs:
-    - "{{ .Values.loki.namespace }}/loki"
-    - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
-  values:
-    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-#
-#  Uncomment to enable secrets values
-#
-  secrets:
-    - "../../../secrets/env/{{ .Environment.Name  }}/grafana-secrets.yaml.enc"
-
-- name: promtail
-  chart: grafana/promtail
-  version: {{ .Values.promtail | get "chart_version" nil | quote }}
-  namespace: {{ .Values.promtail.namespace }}
-  createNamespace: true
-  missingFileHandler: Warn
-  installed: {{ .Values.promtail.installed }}
-  needs:
-    - "{{ .Values.loki.namespace }}/loki"
   values:
     - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
     - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
@@ -123,6 +88,7 @@ releases:
   missingFileHandler: Warn
   installed: {{ .Values.argocd.installed }}
   needs:
+    # - kube-system/namespaces
     - "{{ .Values.argocd.ingress_namespace }}/{{ .Values.argocd.ingress_name }}"
     - "{{ .Values.cert_manager.namespace }}/cert-manager-issuers"
   values:

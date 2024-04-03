@@ -1,4 +1,15 @@
 ---
+core_namespaces:
+  installed: false # true
+  namespaces:
+#    cert-manager: {}
+#    ingress-nginx: {}
+#    argocd: {}
+    loki: {}
+#    monitoring: {}
+#    promtail: {}
+    whoami: {}
+
 ingress_nginx:
   installed: false # true
   chart_version: v4.9.1
@@ -32,8 +43,12 @@ cert_manager_issuer:
 
 loki:
   installed: false # true
-  chart_version: 5.43.3
+  chart_version: 5.47.1
   namespace: "loki"
+
+prometheus_operator_crds:
+  installed: false # true
+  namespace: "monitoring"
 
 prometheus:
   installed: false # true

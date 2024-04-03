@@ -10,31 +10,37 @@ configs:
       helmfile:
         version: v1.0
         allowConcurrency: true
+        lockRepo: false
         init:
-          command: [sh]
+          command: [bash,-c]
           args:
-            - "-c"
             - 'echo "Initializing..."'
         generate:
           command: [bash,-c]
           args:
             - |
-              HELMFILE_ARGS=""
+              echoerr() { printf "%s\n" "$*" >&2; }
+              echoerr "starting generate"
+              HELMFILE_ARGS="--no-color --allow-no-matching-release "
               if [[ -v ARGOCD_APP_NAMESPACE ]]; then
-                HELMFILE_ARGS=" -n $ARGOCD_APP_NAMESPACE "
+                HELMFILE_ARGS="${HELMFILE_ARGS} -n ${ARGOCD_APP_NAMESPACE} "
               fi
               if [[ -v ENV_NAME ]]; then
-                HELMFILE_ARGS="$HELMFILE_ARGS -e $ENV_NAME "
+                HELMFILE_ARGS="${HELMFILE_ARGS} -e ${ENV_NAME} "
               elif [[ -v ARGOCD_ENV_ENV_NAME ]]; then
-                HELMFILE_ARGS="$HELMFILE_ARGS -e $ARGOCD_ENV_ENV_NAME "
+                HELMFILE_ARGS="${HELMFILE_ARGS} -e ${ARGOCD_ENV_ENV_NAME} "
               fi
-              helmfile $HELMFILE_ARGS template --include-crds -q .
-        lockRepo: false
+              if [[ -v ARGOCD_ENV_HELMFILE_FILE ]]; then
+                HELMFILE_ARGS="${HELMFILE_ARGS} -f ${ARGOCD_ENV_HELMFILE_FILE} "
+              else
+                HELMFILE_ARGS="${HELMFILE_ARGS} -f ${ARGOCD_ENV_HELMFILE_FILE}.failed "
+              fi
+              helmfile ${HELMFILE_ARGS} template --include-crds --include-needs -q
 repoServer:
   extraContainers:
     - name: helmfile
       # use image from https://github.com/helmfile/helmfile
-      image: ghcr.io/helmfile/helmfile:latest
+      image: ghcr.io/helmfile/helmfile-debian-stable-slim:v0.162.0
       # Entrypoint should be Argo CD lightweight CMP server i.e. argocd-cmp-server
       command: ["/var/run/argocd/argocd-cmp-server"]
       env:

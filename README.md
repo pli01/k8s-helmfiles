@@ -30,7 +30,10 @@ A top-level helmfile directory, contains dependencies release files and director
 All the yaml files under the specified directory are processed in the alphabetical order.
 Each files defines an ordered list of  releases to deploy.
 
-- 01-core-apps.yaml: for core applications (example ingress, observability, cert-manager...)
+- 01-core-apps.yaml: for core applications (example ingress,cert-manager, argocd...)
+- 01-loki.yaml: logs aggregator
+- 01-prometheus-stack.yaml: observability (grafana,prometheus)
+- 01-promtail.yaml: logs shipping
 - 02-sample-apps.yaml: other applications
 
 #### bases

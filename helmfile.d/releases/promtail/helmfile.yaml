@@ -1,0 +1,21 @@
+---
+bases:
+  - ../../bases/helmDefaults.yaml
+  - ../../bases/environments.yaml
+
+---
+repositories:
+- name: grafana
+  url: https://grafana.github.io/helm-charts
+
+releases:
+- name: promtail
+  chart: grafana/promtail
+  version: {{ .Values.promtail | get "chart_version" nil | quote }}
+  namespace: {{ .Values.promtail.namespace }}
+  createNamespace: true
+  missingFileHandler: Warn
+  installed: {{ .Values.promtail.installed }}
+  values:
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
