@@ -41,6 +41,18 @@ cert_manager_issuer:
   installed: false # true
   namespace: "cert-manager"
 
+argocd:
+  installed: false # true
+  chart_version: 6.7.2
+  namespace: "argocd"
+  ingress_class: nginx
+  ingress_namespace: ingress-nginx
+  ingress_name: ingress-nginx
+
+core_extra_argocd:
+  installed: false # true
+  namespace: "argocd"
+
 loki:
   installed: false # true
   chart_version: 5.47.1
@@ -63,10 +75,4 @@ promtail:
   chart_version: 6.15.5
   namespace: "promtail"
 
-argocd:
-  installed: false # true
-  chart_version: 6.7.2
-  namespace: "argocd"
-  ingress_class: nginx
-  ingress_namespace: ingress-nginx
-  ingress_name: ingress-nginx
+

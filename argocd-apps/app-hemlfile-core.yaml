@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/pli01/k8s-helmfiles.git
+    targetRevision: test-argo-helmfile
+    path: .
+    plugin:
+      name: helmfile-v1.0
+      env:
+        - name: ENV_NAME
+          value: "local"
+        - name: HELMFILE_FILE
+          value: "helmfile.d/01-core-apps.yaml"
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

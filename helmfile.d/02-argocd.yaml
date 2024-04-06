@@ -4,7 +4,7 @@ bases:
   - bases/environments.yaml
 
 helmfiles:
-- path: releases/10-sample-whoami/helmfile.yaml
+- path: releases/argocd/helmfile.yaml
   values:
   - {{ toYaml .Values | nindent 4 }}
 

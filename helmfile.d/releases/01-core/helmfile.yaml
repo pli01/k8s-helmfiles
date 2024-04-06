@@ -9,8 +9,6 @@ repositories:
   url: https://kubernetes.github.io/ingress-nginx
 - name: jetstack
   url: https://charts.jetstack.io
-- name: argo
-  url: https://argoproj.github.io/argo-helm
 
 releases:
 #
@@ -26,6 +24,7 @@ releases:
   installed: {{ .Values.core_namespaces.installed }}
   values:
     - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+
 #
 # ingress-nginx for public apps
 #
@@ -79,20 +78,3 @@ releases:
   values:
     - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
     - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-
-- name: argocd
-  chart: argo/argo-cd
-  version: {{ .Values.argocd | get "chart_version" nil | quote }}
-  namespace: {{ .Values.argocd.namespace }}
-  createNamespace: true
-  missingFileHandler: Warn
-  installed: {{ .Values.argocd.installed }}
-  needs:
-    # - kube-system/namespaces
-    - "{{ .Values.argocd.ingress_namespace }}/{{ .Values.argocd.ingress_name }}"
-    - "{{ .Values.cert_manager.namespace }}/cert-manager-issuers"
-  values:
-    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-  secrets:
-    - "../../../secrets/env/{{ .Environment.Name  }}/argocd-secrets.yaml.enc"
