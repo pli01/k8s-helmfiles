@@ -3,7 +3,11 @@
 [![[helmfiles releases]](https://github.com/pli01/k8s-helmfiles/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/pli01/k8s-helmfiles/actions/workflows/test.yaml)
 
 A monorepo for [Helm](https://helm.sh/) release configuration, managed by
-[Helmfile](https://github.com/helmfile/helmfile).
+[Helmfile](https://github.com/helmfile/helmfile) and [ArgoCD](https://github.com/argoproj/argo-cd)
+
+Make the most of it:
+- Employ Helmfile for generating values tailored to Helm charts
+- Deploy ArgoCD Applications that leverage values rendered by Helmfile, allowing ArgoCD controllers to handle the deployment of Helm releases.
 
 ## Concepts:
 - Helm is a templating system for Kubernetes resource manifests.
@@ -21,7 +25,10 @@ the combination of a set of parameters ("values") and a Kubernetes target.
 
 - Helmfile is a management system for Helm releases.
 It allows the mapping of 'charts' to 'values' to be declared in files.
-values can to be declared at various levels (environments, services, role...), as template or raw values
+values can be declared at various levels (environments, services, role...), as template or raw values
+
+- Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes.
+It use Git repositories as the source of truth for defining the desired application state. It also allows to deploy Helm charts or deploy with helmfile.
 
 ## Repository Structure
 ### helmfile.d
@@ -72,9 +79,23 @@ Each helmfile in releases, define helm repository and releases dependencies (hel
 - `releases/prometheus-stack/`
 - `releases/sample-whoami/`: contains sample app workload, whoami
 
+#### Values
+
+Values for releases can be defined in following order:
+- lookup a value file named `Release_Name-values.gotmpl`
+- lookup a value file named `env/Environment_Name/Release_Name-values.gotmpl`
+
+```
+  ...
+  values:
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+```
+
 ## Run it
 
 Prereq:
+- make
 - helm
 - helmfile (and dependencies)
 - sops/age
@@ -88,11 +109,13 @@ You can install all requirements from the following script hosted on https://git
 curl -Ls https://raw.githubusercontent.com/numerique-gouv/dk8s/main/scripts/install-prereq.sh | bash
 ```
 
-helmfile steps:
+### helmfile steps:
 
 This example, deploy helmfile releases in a local kubernetes environment
 
 If needed, a Makefile is available as a wrapper to helmfile and "local" environment
+
+Some targets of makefile:
 
 - Lint files
 ```
@@ -105,6 +128,11 @@ helmfile -e local lint
 make template
 # or
 helmfile -e local template
+```
+
+- Install local kind cluster
+```
+make ci-bootstrap-local-cluster
 ```
 
 - (Local env): generate and import a local root CA, to generate TLS certificates for all applications
@@ -121,7 +149,7 @@ make sync
 helmfile -e local sync
 ```
 
-- Deployment
+- Deployment of all helmfiles
 ```
 make apply
 # or
