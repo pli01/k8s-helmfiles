@@ -17,7 +17,7 @@ spec:
         - name: ENV_NAME
           value: "local"
         - name: HELMFILE_FILE
-          value: "helmfile.d/01-promtail.yaml"
+          value: "helmfile.d/03-promtail.yaml"
   destination:
     server: https://kubernetes.default.svc
     namespace: promtail

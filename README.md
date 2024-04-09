@@ -90,7 +90,19 @@ Values for releases can be defined in following order:
   values:
     - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
     - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+
+Secrets can be defined in the same way
 ```
+
+### ArgoCD app of apps
+
+ArgoCD can deploy helmfiles with the concept of app of apps
+
+For this example:
+- We define the git repository which contain the root apps (the apps of apps) in `helmfile.d/releases/argocd/env/local/extra-argocd-values.yaml.gotmpl`
+  - in this demo: argocd watch this repo and is trigger on branch `test-argocd-helmfile`
+- Then, we define all Argocd Application in `argocd-apps/app-helmfile*.yaml`
+- Argocd will trigger all deployment on Every commit, on the branch
 
 ## Run it
 

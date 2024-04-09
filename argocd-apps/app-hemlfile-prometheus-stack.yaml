@@ -17,7 +17,7 @@ spec:
         - name: ENV_NAME
           value: "local"
         - name: HELMFILE_FILE
-          value: "helmfile.d/01-prometheus-stack.yaml"
+          value: "helmfile.d/03-prometheus-stack.yaml"
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

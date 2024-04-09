@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: whoami
+  name: argocd
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -17,10 +17,9 @@ spec:
         - name: ENV_NAME
           value: "local"
         - name: HELMFILE_FILE
-          value: "helmfile.d/10-sample-whoami.yaml"
+          value: "helmfile.d/02-argocd.yaml"
   destination:
     server: https://kubernetes.default.svc
-    namespace: whoami
   syncPolicy:
     automated: {}
     syncOptions:
