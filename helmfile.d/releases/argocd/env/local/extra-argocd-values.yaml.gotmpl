@@ -17,9 +17,11 @@ templates:
           path: argocd-apps
           repoURL: https://github.com/pli01/k8s-helmfiles.git
           targetRevision: test-argo-helmfile
+{{- /*
         syncPolicy:
-          # disable automatic deployment
-          automated: {}
+          # automated: {}
           # enable automatic deployment
           # automated:
           #   selfHeal: true
+*/ -}}
+
