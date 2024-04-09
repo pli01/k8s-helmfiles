@@ -113,7 +113,9 @@ curl -Ls https://raw.githubusercontent.com/numerique-gouv/dk8s/main/scripts/inst
 
 This example, deploy helmfile releases in a local kubernetes environment
 
-If needed, a Makefile is available as a wrapper to helmfile and "local" environment
+If needed, a Makefile is available as a wrapper to helmfile and "local" environment config (can be overrided)
+
+Some usefull targets of the Makefile:
 
 Some targets of makefile:
 
@@ -132,7 +134,10 @@ helmfile -e local template
 
 - Install local kind cluster
 ```
+# kind cluster
 make ci-bootstrap-local-cluster
+# or kind cluster with local docker registry
+make ci-bootstrap-local-cluster-with-registry
 ```
 
 - (Local env): generate and import a local root CA, to generate TLS certificates for all applications
@@ -149,11 +154,20 @@ make sync
 helmfile -e local sync
 ```
 
-- Deployment of all helmfiles
+- Deploy all helmfiles
 ```
 make apply
 # or
 helmfile -e local apply
+```
+- Deployment of kind cluster with only core apps (ingres-nginx,cert-manager)
+```
+make boostrap-core
+```
+
+- Deployment of kind cluster with only core apps (ingres-nginx,cert-manager) + ArgoCD
+```
+make boostrap-argocd
 ```
 
 - Diff mode only
