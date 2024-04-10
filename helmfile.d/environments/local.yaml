@@ -1,6 +1,6 @@
 ---
 core_namespaces:
-  installed: true
+  installed: false
 
 ingress_nginx:
   installed: true

@@ -36,6 +36,17 @@ releases:
   verify: false
   missingFileHandler: Warn
   installed: {{ .Values.ingress_nginx.installed }}
+  hooks:
+    - events: ["postsync"]
+      showlogs: true
+      command: "kubectl"
+      args:
+        - "wait"
+        - "--namespace={{ .Values.ingress_nginx.ingress_namespace }}"
+        - "--for=condition=ready"
+        - "pod"
+        - "--selector=app.kubernetes.io/component=controller"
+        - "--timeout=300s"
   values:
     - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
     - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
