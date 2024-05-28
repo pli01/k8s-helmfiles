@@ -1,6 +1,6 @@
 ---
 core_namespaces:
-  installed: true
+  installed: false
 
 ingress_nginx:
   installed: true
@@ -10,13 +10,14 @@ ingress_nginx:
   # kind: "DaemonSet"
   #
   # certificate secret need tls secret 127.0.0.1.nip.io
-  # default_ssl_certificate: "127.0.0.1.nip.io"
+  # kubectl -n ingress-nginx create secret tls 127.0.0.1.nip.io --key 127.0.0.1.nip.io+1-key.pem --cert 127.0.0.1.nip.io+1.pem
+  default_ssl_certificate: "127.0.0.1.nip.io"
 
 cert_manager:
-  installed: true
+  installed: false
 
 cert_manager_issuer:
-  installed: true
+  installed: false
 
 loki:
   installed: true
