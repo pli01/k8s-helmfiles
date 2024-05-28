@@ -43,7 +43,7 @@ cert_manager_issuer:
 
 argocd:
   installed: false # true
-  chart_version: 6.7.2
+  chart_version: 6.11.1
   namespace: "argocd"
   ingress_class: nginx
   ingress_namespace: ingress-nginx
