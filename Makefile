@@ -49,9 +49,9 @@ ci-delete-docker-registry:
 HELMFILE_FILE_CORE=helmfile.d/01-core-apps.yaml
 HELMFILE_FILE_ARGOCD=helmfile.d/02-argocd.yaml
 
-boostrap-core:
+bootstrap-core:
 	helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE_CORE) apply --skip-diff-on-install
-boostrap-argocd: boostrap-core
+bootstrap-argocd: bootstrap-core
 	helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE_ARGOCD) apply --skip-diff-on-install
 destroy-core:
 	helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE_CORE) destroy
