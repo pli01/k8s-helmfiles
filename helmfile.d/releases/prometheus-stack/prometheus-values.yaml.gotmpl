@@ -30,7 +30,7 @@ kube-state-metrics:
 prometheus:
   enabled: true
   ingress:
-    enabled: true
+    enabled: {{ .Values | get "prometheus.prometheus.nginx_enabled" "false" }}
     ingressClassName: {{ .Values.prometheus.ingress_class | quote }}
     annotations:
       kubernetes.io/ingress.class: {{ .Values.prometheus.ingress_class | quote }}
@@ -61,7 +61,7 @@ prometheus:
 
 alertmanager:
   ingress:
-    enabled: true
+    enabled: {{ .Values | get "prometheus.alertmanager.nginx_enabled" "false" }}
     ingressClassName: {{ .Values.prometheus.ingress_class | quote }}
     annotations:
       kubernetes.io/ingress.class: {{ .Values.prometheus.ingress_class | quote }}
@@ -90,7 +90,7 @@ alertmanager:
 
 grafana:
   ingress:
-    enabled: true
+    enabled: {{ .Values | get "prometheus.grafana.nginx_enabled" "false" }}
     ingressClassName: {{ .Values.prometheus.ingress_class | quote }}
     annotations:
       kubernetes.io/ingress.class: {{ .Values.prometheus.ingress_class | quote }}
