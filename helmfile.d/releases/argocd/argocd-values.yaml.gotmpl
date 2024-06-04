@@ -67,7 +67,16 @@ repoServer:
         # Starting with v2.4, do NOT mount the same tmp volume as the repo-server container. The filesystem separation helps mitigate path traversal attacks.
         - mountPath: /tmp
           name: cmp-tmp
+#  env:
+#    - name: SOPS_AGE_KEY_FILE # For age
+#      value: /helm-secrets-private-keys/key.txt
+#  volumeMounts:
+#    - mountPath: /helm-secrets-private-keys/
+#      name: helm-secrets-private-keys
   volumes:
+#    - name: helm-secrets-private-keys
+#      secret:
+#        secretName: helm-secrets-private-keys
     - name: argocd-cmp-cm
       configMap:
         name: argocd-cmp-cm
