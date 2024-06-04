@@ -24,6 +24,10 @@ monitoring:
       annotations:
         argocd.argoproj.io/hook: PreSync
 
+gateway:
+  nginxConfig:
+    enableIPv6: false
+
 {{- /*
 test:
   enabled: false
