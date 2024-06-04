@@ -55,7 +55,7 @@ core_extra_argocd:
 
 loki:
   installed: false # true
-  chart_version: 5.47.1
+  chart_version: 5.47.2
   namespace: "loki"
 
 prometheus_operator_crds:
