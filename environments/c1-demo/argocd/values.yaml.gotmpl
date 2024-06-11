@@ -1,0 +1,45 @@
+---
+global:
+  domain: argocd.c1-demo.mydomain.org
+server:
+  ingress:
+    enabled: true
+    tls: true
+    annotations:
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+{{- if hasKey .Values.argocd "whitelist_source_range" }}
+      nginx.ingress.kubernetes.io/whitelist-source-range: {{ .Values.argocd.whitelist_source_range }}
+{{- end }}
+      nginx.ingress.kubernetes.io/auth-type: basic
+      nginx.ingress.kubernetes.io/auth-secret: ingress-nginx/extern-basic-auth
+      nginx.ingress.kubernetes.io/auth-secret-type: auth-map
+      nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+    ingressClassName: {{ .Values.argocd.ingress_class | quote }}
+  certificate:
+    enabled: true
+    issuer:
+      group: "cert-manager.io"
+      kind: "ClusterIssuer"
+      name: "letsencrypt-staging"
+configs:
+  secret:
+    extra:
+      accounts.devops.passwordMtime: 2024-05-31T15:06:57Z
+  cm:
+    accounts.devops: apiKey,login
+    accounts.devops.enabled: "true"
+  rbac:
+    policy.default: 'role:readonly'
+    policy.csv: |
+      p, role:devops, applications, get, */*, allow
+      p, role:devops, applications, create, */*, allow
+      p, role:devops, applications, delete, */*, allow
+      p, role:devops, repositories, get, *, allow
+      p, role:devops, repositories, create, *, allow
+      p, role:devops, repositories, delete, *, allow
+      p, role:devops, projects, get, *, allow
+      p, role:devops, projects, create, *, allow
+      p, role:devops, projects, delete, *, allow
+      p, role:devops, logs, get, */*, allow
+      g, devops, role:devops

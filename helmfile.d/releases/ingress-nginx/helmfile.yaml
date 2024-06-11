@@ -1,0 +1,43 @@
+---
+bases:
+  - ../../base/helmDefaults.yaml
+  - ../../base/environments.yaml
+  - ../../../environments/environments.yaml
+
+---
+repositories:
+- name: ingress-nginx
+  url: https://kubernetes.github.io/ingress-nginx
+
+releases:
+#
+# ingress-nginx for public apps
+#
+- name: {{ .Values.ingress_nginx.name | quote }}
+  chart: ingress-nginx/ingress-nginx
+  version: {{ .Values.ingress_nginx | get "chart_version" nil | quote }}
+  namespace: {{ .Values.ingress_nginx.ingress_namespace }}
+  createNamespace: true
+  verify: false
+  missingFileHandler: Warn
+  installed: {{ .Values.ingress_nginx.installed }}
+
+  values:
+    - "../{{`{{ .Release.Name }}`}}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
+  secrets:
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"
+#
+# ingress-nginx-admin for private apps
+#
+- name: {{ .Values.ingress_nginx_admin.name | quote }}
+  chart: ingress-nginx/ingress-nginx
+  version: {{ .Values.ingress_nginx_admin | get "chart_version" nil | quote }}
+  namespace: {{ .Values.ingress_nginx_admin.ingress_namespace }}
+  createNamespace: true
+  installed: {{ .Values.ingress_nginx_admin.installed }}
+  values:
+    - "../{{`{{ .Release.Name }}`}}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
+  secrets:
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"

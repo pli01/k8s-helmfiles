@@ -1,4 +1,9 @@
 ---
+crds:
+  keep: false
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+
 configs:
   params:
     server.insecure: true
@@ -21,6 +26,11 @@ configs:
             - |
               echoerr() { printf "%s\n" "$*" >&2; }
               echoerr "starting generate"
+              if [[ -v ARGOCD_ENV_HTTP_PROXY ]]; then
+                export http_proxy="${ARGOCD_ENV_HTTP_PROXY}"
+                export https_proxy="${ARGOCD_ENV_HTTPS_PROXY}"
+                export no_proxy="${ARGOCD_ENV_NO_PROXY}"
+              fi
               HELMFILE_ARGS="--no-color --allow-no-matching-release "
               if [[ -v ARGOCD_APP_NAMESPACE ]]; then
                 HELMFILE_ARGS="${HELMFILE_ARGS} -n ${ARGOCD_APP_NAMESPACE} "
@@ -42,7 +52,10 @@ repoServer:
       # use image from https://github.com/helmfile/helmfile
       image: ghcr.io/helmfile/helmfile-debian-stable-slim:v0.162.0
       # Entrypoint should be Argo CD lightweight CMP server i.e. argocd-cmp-server
-      command: ["/var/run/argocd/argocd-cmp-server"]
+      command:
+        - /var/run/argocd/argocd-cmp-server
+      #  - --loglevel
+      #  - debug
       env:
         - name: HELM_CACHE_HOME
           value: /tmp/helm/cache
@@ -52,12 +65,36 @@ repoServer:
           value: /tmp/helmfile/cache
         - name: HELMFILE_TEMPDIR
           value: /tmp/helmfile/tmp
+{{- if hasKey .Values "proxy" }}
+{{- if hasKey .Values.proxy "http_proxy" }}
+        - name: http_proxy
+          value: {{ .Values.proxy.http_proxy }}
+        - name: HTTP_PROXY
+          value: {{ .Values.proxy.http_proxy }}
+{{- end }}
+{{- if hasKey .Values.proxy "https_proxy" }}
+        - name: https_proxy
+          value: {{ .Values.proxy.https_proxy }}
+        - name: HTTPS_PROXY
+          value: {{ .Values.proxy.https_proxy }}
+{{- end }}
+{{- if hasKey .Values.proxy "no_proxy" }}
+        - name: no_proxy
+          value: {{ .Values.proxy.no_proxy }}
+        - name: NO_PROXY
+          value: {{ .Values.proxy.no_proxy }}
+{{- end }}
+{{- end }}
+{{- if hasKey .Values "sops" }}
+{{- if hasKey .Values.sops "age" }}
+        - name: SOPS_AGE_KEY_FILE
+          value: /sops-age-key-file/key.txt
+{{- end }}
+{{- end }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
       volumeMounts:
-        - mountPath: /var/run/argocd
-          name: var-files
         - mountPath: /home/argocd/cmp-server/plugins
           name: plugins
         # Register helmfile plugin into sidecar
@@ -67,7 +104,26 @@ repoServer:
         # Starting with v2.4, do NOT mount the same tmp volume as the repo-server container. The filesystem separation helps mitigate path traversal attacks.
         - mountPath: /tmp
           name: cmp-tmp
+        - mountPath: /var/run/argocd
+          name: var-files
+{{- if hasKey .Values "sops" }}
+{{- if hasKey .Values.sops "age" }}
+        - mountPath: /sops-age-key-file
+          name: sops-age-key-file
+  env:
+    - name: SOPS_AGE_KEY_FILE
+      value: /sops-age-key-file/key.txt
+{{- end }}
+{{- end }}
   volumes:
+{{- if hasKey .Values "sops" }}
+{{- if hasKey .Values.sops "age" }}
+    - name: sops-age-key-file
+      secret:
+        defaultMode: 420
+        secretName: sops-age-key-file
+{{- end }}
+{{- end }}
     - name: argocd-cmp-cm
       configMap:
         name: argocd-cmp-cm

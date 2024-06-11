@@ -1,0 +1,130 @@
+provider:
+  openstack: true
+global:
+  # custom proxy
+  http_proxy: http://192.168.2.10:8888
+  https_proxy: http://192.168.2.10:8888
+  no_proxy: localhost,192.168.0.0/16
+
+  # cluster
+  clusterName: c1-demo
+  pods:
+    cidrBlocks: "172.16.0.0/16"
+  services:
+    cidrBlocks: "10.96.0.0/12"
+
+  # helm addons
+  addons:
+    cni:
+      enabled: true
+      #enabled: false
+      type: cilium
+      version: 1.15.5
+      #type: calico
+      #version: v3.27.3
+      config:
+        ipaddresspool:
+          layer: "l2"
+          name: "first-pool"
+          addresses:
+            - 192.168.101.11/32
+    ccm:
+      enabled: true
+      #enabled: false
+      type: openstack
+      version: 2.30.1
+    metallb:
+      #enabled: true
+      enabled: false
+      type: metallb
+      version: 0.14.5
+      config:
+        ipaddresspool:
+          layer: "l2"
+          name: "first-pool"
+          addresses:
+            - 192.168.101.11/32
+    ingress:
+      #enabled: true
+      enabled: false
+      type: ingress-nginx
+      version: 4.10.1
+    certmanager:
+      #enabled: true
+      enabled: false
+      type: cert-manager
+      version: v1.14.5
+    storagelocal:
+      enabled: true
+      #enabled: false
+      type: storagelocal
+      version: 0.0.25
+    csi:
+      enabled: true
+      #enabled: false
+      type: cinder-csi
+      version: 2.30.0
+
+
+#
+# reference to openstack helm values
+#
+openstack:
+  sshkeyname: k8s_key
+  router: router_services
+  network: network_kube
+  subnet: subnet_kube
+  bastion:
+    enabled: false
+    image: ubuntu22.04
+    flavor: CO1.2
+  controlplane:
+    version: v1.29.5
+    replicas: 1
+    image: ubuntu-2204-kube-v1.29.5
+    flavor: CO1.2
+    availabilityZones:
+      - AZ1
+      - AZ2
+    # IP for kube API : pre allocated IP outside cluster-api
+    apiServerFixedIP: 192.168.101.10
+    rootVolume:
+      sizeGiB: 30
+      type: __DEFAULT__
+  workers:
+    - name: md-0
+      version: v1.29.5
+      replicas: 2
+      image: ubuntu-2204-kube-v1.29.5
+      flavor: CO1.2
+      failureDomain: AZ2
+      # IP for ingress: pre allocated IP outside cluster-api
+      ingressServerFixedIP: 192.168.101.11
+      rootVolume:
+        sizeGiB: 30
+        type: __DEFAULT__
+      additionalBlockDevices:
+        name: data
+        sizeGiB: 30
+        type: __DEFAULT__
+
+## Add workers node
+#    - name: md-1
+#      version: v1.29.5
+#      replicas: 0
+#      image: ubuntu-2204-kube-v1.29.5
+#      flavor: CO1.2
+#      failureDomain: AZ1
+#      # IP for ingress: pre allocated IP outside cluster-api
+#      ingressServerFixedIP: 192.168.101.11
+  csi:
+    storageClass:
+    - metadata:
+        name: cinder-default
+      spec:
+        provisioner: cinder.csi.openstack.org
+        volumeBindingMode: WaitForFirstConsumer
+        allowVolumeExpansion: false
+        parameters:
+          type: __DEFAULT__
+          availability: nova

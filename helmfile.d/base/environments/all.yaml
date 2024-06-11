@@ -1,0 +1,102 @@
+---
+# default common values for all environment
+capi_cluster:
+  installed: true
+
+core_namespaces:
+  installed: true
+  namespaces:
+    cert-manager: {}
+    ingress-nginx: {}
+workload_namespaces:
+  installed: true
+  namespaces:
+    argocd: {}
+    monitoring: {}
+    promtail: {}
+    loki: {}
+    whoami: {}
+
+ingress_nginx:
+  installed: false # true
+  chart_version: 4.10.1
+  name: "ingress-nginx"
+  ingress_class: "nginx"
+  ingress_namespace: "ingress-nginx"
+  kind: "DaemonSet"
+  config:
+    use-forwarded-headers: "true"
+    enable-real-ip: "true"
+    forwarded-for-header: X-Forwarded-For
+
+ingress_nginx_admin:
+  installed: false # true
+  chart_version: v4.9.1
+  name: "ingress-nginx-admin"
+  ingress_class: "nginx-admin"
+  ingress_namespace: "ingress-nginx-admin"
+  kind: "DaemonSet"
+  controller_value: "k8s.io/ingress-nginx-admin"
+  http: 80
+  https: 443
+
+cert_manager:
+  installed: false # true
+  chart_version: v1.14.5
+  namespace: "cert-manager"
+  ingress_class: "nginx"
+  ingress_name: ingress-nginx
+  ingress_namespace: ingress-nginx
+
+cert_manager_secrets:
+  installed: false # true
+  namespace: "cert-manager"
+  templates: []
+
+cert_manager_issuer:
+  installed: false # true
+  namespace: "cert-manager"
+
+
+argocd:
+  installed: true
+  chart_version: 6.11.1
+  namespace: "argocd"
+  ingress_class: nginx
+  ingress_namespace: ingress-nginx
+  ingress_name: ingress-nginx
+
+argocd_basic_auth:
+  installed: false
+  namespace: "ingress-nginx"
+
+grafana_basic_auth:
+  installed: false
+  namespace: "ingress-nginx"
+
+prometheus_operator_crds:
+  installed: false
+  namespace: "monitoring"
+
+prometheus:
+  installed: true
+  chart_version: 57.1.1
+  namespace: "monitoring"
+  ingress_class: nginx
+  ingress_namespace: ingress-nginx
+  ingress_name: ingress-nginx
+
+loki:
+  installed: true
+  chart_version: 6.6.3
+  namespace: "loki"
+
+promtail:
+  installed: true
+  chart_version: 6.15.5
+  namespace: "promtail"
+
+whoami:
+  installed: false
+  namespace: "whoami"
+

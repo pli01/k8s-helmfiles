@@ -1,0 +1,13 @@
+---
+{{- $envValuesDir := print (regexReplaceAll "/releases/[^/]+$" (env "PWD") "") "/helmfile.d/base/environments" }}
+
+environments:
+  default:
+    values:
+      - "{{ $envValuesDir }}/all.yaml"
+      - "{{ $envValuesDir }}/{{ .Environment.Name }}.yaml"
+
+  local:
+    values:
+      - "{{ $envValuesDir }}/all.yaml"
+      - "{{ $envValuesDir }}/{{ .Environment.Name }}.yaml"

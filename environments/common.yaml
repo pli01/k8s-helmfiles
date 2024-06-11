@@ -1,0 +1,12 @@
+---
+# helmfile environment:
+#  override all values from helmfile.d/base/environments/all.yaml
+#argocd:
+#  installed: true
+#sops:
+#  age: true
+proxy:
+  http_proxy: http://192.168.2.10:8888
+  https_proxy: http://192.168.2.10:8888
+  no_proxy: svc,.svc.cluster,.svc.cluster.local,127.0.0.0/8,10.96.0.0/12,172.16.0.0/16,192.168.0.0/16
+

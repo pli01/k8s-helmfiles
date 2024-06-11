@@ -1,0 +1,5 @@
+---
+templates:
+    - |
+      # use generated local key-pair
+      {{ readFile "../../../secrets/ca-issuer-key-pair.yaml" | nindent 6 }}

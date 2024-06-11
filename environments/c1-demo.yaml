@@ -1,0 +1,119 @@
+---
+# helmfile environment values
+cert_manager:
+  installed: true
+
+cert_manager_issuer:
+  installed: true
+  clusterIssuers:
+  - metadata:
+      name: letsencrypt-staging
+    spec:
+      acme:
+        server: https://acme-staging-v02.api.letsencrypt.org/directory
+        email: admin@mydomain.org # REPLACE_HERE
+        privateKeySecretRef:
+          name: letsencrypt-staging
+        solvers:
+            - http01:
+                ingress:
+                  ingressClassName: nginx
+  - metadata:
+      name: letsencrypt-production
+    spec:
+      acme:
+        server: https://acme-v02.api.letsencrypt.org/directory
+        email: admin@mydomain.org # REPLACE_HERE
+        privateKeySecretRef:
+          name: letsencrypt-production
+        solvers:
+            - http01:
+                ingress:
+                  ingressClassName: nginx
+
+ingress_nginx:
+  installed: true
+  nodeSelector:
+    ingress-ready: "true"
+  config:
+    use-forwarded-headers: "true"
+    enable-real-ip: "true"
+    forwarded-for-header: X-Forwarded-For
+    # to get real ip from external LB
+    use-proxy-protocol: "true"
+
+argocd:
+  installed: true
+  # whitelist_source_range: x.x.x.x/32,x.x.x.x/32
+
+loki:
+  installed: true
+promtail:
+  installed: true
+
+argocd_basic_auth:
+  installed: true
+grafana_basic_auth:
+  installed: true
+
+prometheus:
+  installed: true
+  grafana_hostname: grafana.c1-demo.mydomain.org
+  alertmanager_hostname: alertmanager.c1-demo.mydomain.org
+  prometheus_hostname: prometheus.c1-demo.mydomain.org
+  prometheus:
+    nginx_enabled: false
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-staging"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      # nginx.ingress.kubernetes.io/whitelist-source-range: x.x.x.x/32,x.x.x.x/32
+    tls:
+      - hosts:
+        - prometheus.c1-demo.mydomain.org
+        secretName: prometheus.c1-demo.mydomain.org
+    hosts:
+      - prometheus.c1-demo.mydomain.org
+  alertmanager:
+    nginx_enabled: false
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-staging"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      # nginx.ingress.kubernetes.io/whitelist-source-range: x.x.x.x/32,x.x.x.x/32
+    tls:
+      - hosts:
+        - alertmanager.c1-demo.mydomain.org
+        secretName: alertmanager.c1-demo.mydomain.org
+    hosts:
+      - alertmanager.c1-demo.mydomain.org
+  grafana:
+    nginx_enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-staging"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      # REPLACE_HERE
+      # nginx.ingress.kubernetes.io/whitelist-source-range: x.x.x.x/32,x.x.x.x/32
+      nginx.ingress.kubernetes.io/auth-type: basic
+      nginx.ingress.kubernetes.io/auth-secret: ingress-nginx/grafana-basic-auth
+      nginx.ingress.kubernetes.io/auth-secret-type: auth-map
+      nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+    tls:
+      - hosts:
+        - grafana.c1-demo.mydomain.org
+        secretName: grafana.c1-demo.mydomain.org
+    hosts:
+      - grafana.c1-demo.mydomain.org
+  # define which ingress to use
+  ingress_class: nginx
+  ingress_namespace: ingress-nginx
+  ingress_name: ingress-nginx
+
+
+whoami:
+  installed: true
+  ingress_class: nginx
+  hostname: whoami.c1-demo.mydomain.org
+  # whitelist_source_range: x.x.x.x/32,x.x.x.x/32
+  certmanager_cluster_issuer: "letsencrypt-staging"

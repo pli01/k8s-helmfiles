@@ -1,0 +1,17 @@
+---
+{{- $envValuesDir := print (regexReplaceAll "/releases/[^/]+$" (env "PWD") "") "/environments" }}
+
+environments:
+#  c3-dev:
+#    values:
+#      - "{{ $envValuesDir }}/common.yaml"
+#      - "{{ $envValuesDir }}/{{ .Environment.Name }}.yaml"
+#
+# add environment below
+#   add values file to override values
+# create environment directory to add release values and secrets files per environement
+  {{ .Environment.Name }}:
+    values:
+      - "{{ $envValuesDir }}/../helmfile.d/base/environments/all.yaml"
+      - "{{ $envValuesDir }}/common.yaml"
+      - "{{ $envValuesDir }}/{{ .Environment.Name }}.yaml"

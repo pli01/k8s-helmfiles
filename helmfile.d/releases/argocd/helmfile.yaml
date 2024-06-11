@@ -1,7 +1,8 @@
 ---
 bases:
-  - ../../bases/helmDefaults.yaml
-  - ../../bases/environments.yaml
+  - ../../base/helmDefaults.yaml
+  - ../../base/environments.yaml
+  - ../../../environments/environments.yaml
 
 ---
 repositories:
@@ -12,27 +13,25 @@ releases:
 - name: argocd
   chart: argo/argo-cd
   version: {{ .Values.argocd | get "chart_version" nil | quote }}
-  namespace: {{ .Values.argocd.namespace }}
+  namespace: {{ .Values.argocd | get "namespace" "argocd" }}
+  installed: {{ .Values.argocd | get "installed" false }}
   createNamespace: true
   missingFileHandler: Warn
-  installed: {{ .Values.argocd.installed }}
   values:
-    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../{{`{{ .Release.Name }}`}}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
   secrets:
-    - "../../../secrets/env/{{ .Environment.Name  }}/argocd-secrets.yaml.enc"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"
 
-- name: extra-argocd
-  chart: ../../../charts/raw
-  version: {{ .Values.core_extra_argocd | get "chart_version" nil | quote }}
-  namespace: {{ .Values.core_extra_argocd.namespace }}
+- name: argocd-basic-auth
+  chart: ../../../charts/ingress-auth
+  version: {{ .Values.argocd_basic_auth | get "chart_version" nil | quote }}
+  namespace: {{ .Values.argocd_basic_auth | get "namespace" "ingress-nginx" }}
+  installed: {{ .Values.argocd_basic_auth | get "installed" false }}
   verify: false
   missingFileHandler: Warn
-  installed: {{ .Values.core_extra_argocd.installed }}
-  needs:
-    - "{{ .Values.argocd.namespace }}/argocd"
   values:
-    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../{{`{{ .Release.Name }}`}}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
   secrets:
-    - "../../../secrets/env/{{ .Environment.Name  }}/{{`{{ .Release.Name }}`}}-secrets.yaml.enc"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"
