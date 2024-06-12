@@ -1,0 +1,22 @@
+ingress:
+  enabled: {{ .Values | get "portainer.ingress_enabled" "false" }}
+  ingressClassName: {{ .Values.portainer.ingress_class | quote }}
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.portainer.ingress_class | quote }}
+{{- if hasKey .Values.portainer "ingress" }}
+{{- if hasKey .Values.portainer.ingress "annotations" }}
+    {{ toYaml ((.Values).portainer.ingress).annotations | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.portainer.ingress "hosts" }}
+  hosts: {{ toYaml ((.Values).portainer.ingress).hosts | nindent 4 }}
+{{- end }}
+
+{{- if hasKey .Values.portainer.ingress "tls" }}
+  tls: {{ toYaml ((.Values).portainer.ingress).tls | nindent 4 }}
+{{- end }}
+{{- end }}
+
+{{- if hasKey .Values.portainer "feature" }}
+feature:
+  flags: {{ toYaml ((.Values).portainer.feature).flags | nindent 4 }}
+{{- end }}

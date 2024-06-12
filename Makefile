@@ -1,14 +1,15 @@
 HELMFILE_ENVIRONMENT := local
 HELMFILE_FILE := helmfile.d
+HELMFILE_ARGS :=
 K8S_VERSION=v1.29.4
 export
 
 lint: repos
-	@helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) lint
+	@helmfile $(HELMFILE_ARGS) -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) lint
 repos:
 	@helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) repos
 template:
-	@helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) template --include-crds  --include-needs  --include-transitive-needs
+	@helmfile $(HELMFILE_ARGS) -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) template --include-crds  --include-needs  --include-transitive-needs
 diff:
 	@helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) diff
 sync:

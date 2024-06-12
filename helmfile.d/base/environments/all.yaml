@@ -16,6 +16,7 @@ workload_namespaces:
     promtail: {}
     loki: {}
     whoami: {}
+    portainer: {}
 
 ingress_nginx:
   installed: false # true
@@ -99,4 +100,11 @@ promtail:
 whoami:
   installed: false
   namespace: "whoami"
+
+portainer:
+  installed: false
+  namespace: "portainer"
+  ingress_class: nginx
+  ingress_namespace: ingress-nginx
+  ingress_name: ingress-nginx
 

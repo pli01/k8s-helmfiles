@@ -1,0 +1,11 @@
+---
+bases:
+  - ../base/helmDefaults.yaml
+  - ../base/environments.yaml
+  - ../../environments/environments.yaml
+
+---
+helmfiles:
+- path: ../releases/portainer/helmfile.yaml
+  values:
+  - {{ toYaml .Values | nindent 4 }}
