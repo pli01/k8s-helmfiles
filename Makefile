@@ -1,21 +1,22 @@
 HELMFILE_ENVIRONMENT := local
-K8S_VERSION=v1.29.2
+HELMFILE_FILE := helmfile.d
+K8S_VERSION=v1.29.4
 export
 
 lint: repos
-	@helmfile -e $(HELMFILE_ENVIRONMENT) lint
+	@helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) lint
 repos:
-	@helmfile -e $(HELMFILE_ENVIRONMENT) repos
+	@helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) repos
 template:
-	@helmfile -e $(HELMFILE_ENVIRONMENT) template --include-crds  --include-needs  --include-transitive-needs -q
+	@helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) template --include-crds  --include-needs  --include-transitive-needs
 diff:
-	@helmfile -e $(HELMFILE_ENVIRONMENT) diff
+	@helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) diff
 sync:
-	helmfile -e $(HELMFILE_ENVIRONMENT) sync
+	helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) sync
 apply:
-	helmfile -e $(HELMFILE_ENVIRONMENT) apply --skip-diff-on-install
+	helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) apply --skip-diff-on-install
 destroy:
-	helmfile -e $(HELMFILE_ENVIRONMENT) destroy
+	helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE) destroy
 
 local-root-ca:
 	@echo "# import local root CA"
@@ -46,10 +47,13 @@ ci-delete-docker-registry:
 	docker rm -f  kind-registry || true
 
 # Boostrap minimal core apps (argocd) and app-of-apps
-HELMFILE_FILE_CORE=helmfile.d/01-core-apps.yaml
-HELMFILE_FILE_ARGOCD=helmfile.d/02-argocd.yaml
+HELMFILE_FILE_CORE=helmfile.d/cluster-configure-core
+HELMFILE_FILE_ARGOCD=helmfile.d/cluster-workload/10-argocd.yaml
+export HELMFILE_FILE_CORE
 
-boostrap-core:
+bootstrap-core: HELMFILE_FILE=$(HELMFILE_FILE_CORE)
+bootstrap-core:
 	helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE_CORE) apply --skip-diff-on-install
-boostrap-argocd: boostrap-core
+bootstrap-argocd: HELMFILE_FILE=$(HELMFILE_FILE_ARGOCD)
+bootstrap-argocd: bootstrap-core
 	helmfile -e $(HELMFILE_ENVIRONMENT) -f $(HELMFILE_FILE_ARGOCD) apply --skip-diff-on-install

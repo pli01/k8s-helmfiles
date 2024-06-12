@@ -1,0 +1,21 @@
+---
+bases:
+  - ../../base/helmDefaults.yaml
+  - ../../base/environments.yaml
+  - ../../../environments/environments.yaml
+
+---
+releases:
+- name: namespaces
+  chart: ../../../charts/raw
+  version: {{ .Values.core_namespaces | get "chart_version" nil | quote }}
+  namespace: kube-system
+  installed: {{ .Values.core_namespaces | get "installed" false }}
+  verify: false
+  createNamespace: true
+  missingFileHandler: Warn
+  values:
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
+  secrets:
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"

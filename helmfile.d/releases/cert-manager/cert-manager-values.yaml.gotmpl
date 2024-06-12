@@ -1,0 +1,51 @@
+---
+installCRDs: true
+crds:
+  enabled: true
+{{- if hasKey .Values.cert_manager "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).cert_manager).node_selector | nindent 4 }}
+{{- else }}
+  nodeSelector: {}
+{{- end }}
+{{- if hasKey .Values.cert_manager "tolerations" }}
+  tolerations: {{ toYaml ((.Values).cert_manager).tolerations | nindent 4 }}
+{{- end }}
+fullnameOverride: cert-manager
+extraEnv:
+  {{- if hasKey .Values "proxy" }}
+  {{- if hasKey .Values.proxy "http_proxy" }}
+  - name: http_proxy
+    value: {{ .Values.proxy.http_proxy | quote }}
+  {{- end }}
+  {{- if .Values.proxy.https_proxy }}
+  - name: https_proxy
+    value: {{ .Values.proxy.https_proxy }}
+  {{- end }}
+  {{- if .Values.proxy.no_proxy }}
+  - name: no_proxy
+    value: {{ .Values.proxy.no_proxy }}
+  {{- end }}
+  {{- end }}
+resources:
+  limits:
+    memory: 100Mi
+    cpu: 300m
+  requests:
+    memory: 100Mi
+    cpu: 300m
+webhook:
+  resources:
+    limits:
+      memory: 50Mi
+      cpu: 10m
+    requests:
+      memory: 50Mi
+      cpu: 10m
+cainjector:
+  resources:
+    limits:
+      memory: 100Mi
+      cpu: 10m
+    requests:
+      memory: 100Mi
+      cpu: 10m

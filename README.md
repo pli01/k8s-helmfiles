@@ -24,82 +24,104 @@ A release is a deployment of a Helm chart in an environment, where an environmen
 the combination of a set of parameters ("values") and a Kubernetes target.
 
 - Helmfile is a management system for Helm releases.
-It allows the mapping of 'charts' to 'values' to be declared in files.
+It allows the mapping of 'charts' to 'values' and 'secrets' to be declared in files.
 values can be declared at various levels (environments, services, role...), as template or raw values
 
 - Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes.
 It use Git repositories as the source of truth for defining the desired application state. It also allows to deploy Helm charts or deploy with helmfile.
 
+Note:
+argocd run the helmfile plugin. In this context, helmfile generate template to output.
+Rendered ressources are send to kubernetes cluster in stream
+helmfile is not executed directly in argocd
+
 ## Repository Structure
+It is organized as followed
+- apps: argocd app per cluster and steps for cluster
+- helmfile.d: helmfile releases to create and configure cluster. generic helmfile and helm charts with default configuration
+- environments: per environment and cluster configuration and secrets (can be hosted on private repo)
+
+A local environment is provided to develop on local machine
+
 ### helmfile.d
 
-A top-level helmfile directory, contains dependencies release files and directory.
+A top-level helmfile directory, contains directories and dependencies release files
 All the yaml files under the specified directory are processed in the alphabetical order.
 Each files defines an ordered list of  releases to deploy.
 
-- 01-core-apps.yaml: for core applications (example ingress,cert-manager,...)
-- 02-argocd.yaml: argocd and app-of-apps
-- 03-loki.yaml: logs aggregator
-- 02-prometheus-stack.yaml: observability (grafana,prometheus)
-- 03-promtail.yaml: logs shipping
-- 02-sample-apps.yaml: other applications
+- cluster-bootstrap: cluster-api
+  - 01-create-cluster.yaml : create kubernetes cluster with cluster-api
 
+- cluster-configure-core: core applications (ingress,cert-manager,...)
+  - 00-namespaces.yaml
+  - 01-cert-manager.yaml
+  - 02-ingress-nginx.yaml
+
+- cluster-workload: addons workload applications (argocd,prometheus,loki,...)
+  - 00-namespaces-workload.yaml
+  - 10-argocd.yaml
+  - 30-loki.yaml
+  - 31-prometheus-stack.yaml
+  - 32-promtail.yaml
+  - 80-whoami.yaml
 
 #### bases
 This directory contains 2 files:
 - `helmDefaults.yaml`, which directs `helmfile` on global configuration to pass to `helm`
 - and `environments.yaml` wich defines defines various environments (define in environments directory)
 
-#### environments
-This directory contains values for each environments, and kubernetes target
+#### base/environments
+This directory contains default values for all environments, and local target
 
 Files are loaded in following order and the last override the first.
-- `common.yaml`: is the common file loaded in all environement
-- `{{ environment }}.yaml`
 
 Environments:
 - `default.yaml`: is the default use by helmfile without any argument
-- `local.yaml`: is a sample local environment, (based on KinD kubernetes target for example)
-- `dev.yaml`: is an other sample dev environment
+- `local.yaml`: is a sample local environment, (based on KinD kubernetes target for development)
 
-```
-# example:  to deploy one environment, for example 'local' use:
-helmfile -e local  sync
-```
 
 #### releases
 Each subdirectory of `releases` contains 1 (or sometimes more!) release.
 
 Each helmfile in releases, define helm repository and releases dependencies (helm charts), and values and secrets (for helm charts)
 
-- `releases/01-core/`: contains minimal workload needed on kubernetes target (ingress-nginx, observability stack)
+- `releases/cert-manager/`
+- `releases/ingress-nginx/`
 - `releases/argocd/`
 - `releases/loki/`
 - `releases/promtail/`
 - `releases/prometheus-stack/`
-- `releases/sample-whoami/`: contains sample app workload, whoami
+- `releases/whoami/`: contains sample app workload, whoami
 
-#### Values
+#### Values and Secrets
 
 Values for releases can be defined in following order:
-- lookup a value file named `Release_Name-values.gotmpl`
-- lookup a value file named `env/Environment_Name/Release_Name-values.gotmpl`
+- lookup a value file named `releases/Relase_name/Release_Name-values.gotmpl`
+- lookup a value file named `../environnements/Environment_Name/Release_name/values.gotmpl`
 
 ```
   ...
   values:
     - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
 
 Secrets can be defined in the same way
 ```
+
+### environments
+This directory contains least values loaded for all environments
+
+environments:
+  - ENV.yaml
+  - ENV/{releases}/values.yaml
+  - ENV/{releases}/secrets.enc.yaml
 
 ### ArgoCD app of apps
 
 ArgoCD can deploy helmfiles with the concept of app of apps
 
 For this example:
-- We define the git repository which contain the root apps (the apps of apps) in `helmfile.d/releases/argocd/env/local/extra-argocd-values.yaml.gotmpl`
+- We define the git repository which contain the root apps (the apps of apps) in `environments/local/extra-argocd/values.yaml.gotmpl`
   - in this demo: argocd watch this repo and is trigger on branch `test-argocd-helmfile`
 - Then, we define all Argocd Application in `argocd-apps/app-helmfile*.yaml`
 - Argocd will trigger all deployment on Every commit, on the branch
@@ -129,21 +151,6 @@ If needed, a Makefile is available as a wrapper to helmfile and "local" environm
 
 Some usefull targets of the Makefile:
 
-Some targets of makefile:
-
-- Lint files
-```
-make lint
-# or
-helmfile -e local lint
-```
-- Display templated files
-```
-make template
-# or
-helmfile -e local template
-```
-
 - Install local kind cluster
 ```
 # kind cluster
@@ -157,20 +164,24 @@ make ci-bootstrap-local-cluster-with-registry
 make local-root-ca
 ```
 
-- First deployment (needed to load some CRDS)
+- Lint files
+```
+make lint HELMFILE_FILE=helmfile.d/cluster-configure-core
+```
+- Display templated files
+```
+make template HELMFILE_FILE=helmfile.d/cluster-configure-core
+```
 
+- First deployment (needed to load some CRDS)
 ```
 # first deployment, needed to load CRDS
-make sync
-# or
-helmfile -e local sync
+make sync HELMFILE_FILE=helmfile.d/cluster-configure-core
 ```
 
 - Deploy all helmfiles
 ```
-make apply
-# or
-helmfile -e local apply
+make apply HELMFILE_FILE=helmfile.d/cluster-configure-core
 ```
 - Deployment of kind cluster with only core apps (ingres-nginx,cert-manager)
 ```
@@ -185,13 +196,22 @@ make boostrap-argocd
 - Diff mode only
 ```
 make diff
-# or
-helmfile -e local diff
 ```
 
 Destroy all resources
 ```
 make destroy
-# or
-helmfile -e local destroy
+```
+
+### test helmfile for another environment: lint and template
+
+```
+# lint file
+( export CLUSTER_NAME=c1-demo ; make  HELMFILE_ENVIRONMENT=${CLUSTER_NAME}  HELMFILE_FILE=helmfile.d/cluster-configure-core lint )
+
+# generate template
+( export CLUSTER_NAME=c1-demo ; make  HELMFILE_ENVIRONMENT=${CLUSTER_NAME}  HELMFILE_FILE=helmfile.d/cluster-configure-core template )
+
+# test template in dry run on antoher real cluster
+( export CLUSTER_NAME=c1-demo ; export KUBECONFIG=$HOME/.kube/${CLUSTER_NAME}.kubeconfig ; make  HELMFILE_ENVIRONMENT=${CLUSTER_NAME}  HELMFILE_FILE=helmfile.d/workload-cluster/  KUBECONFIG=$KUBECONFIG template | kubectl apply -f e --dry-run=client )
 ```

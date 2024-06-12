@@ -1,0 +1,20 @@
+---
+global:
+  domain: argocd.127.0.0.1.nip.io
+server:
+  ingress:
+    enabled: true
+    tls: true
+    annotations:
+      cert-manager.io/cluster-issuer: "ca-cluster-issuer"
+    ingressClassName: {{ .Values.argocd.ingress_class | quote }}
+  certificate:
+    enabled: true
+    issuer:
+      group: "cert-manager.io"
+      kind: "ClusterIssuer"
+      name: "ca-cluster-issuer"
+configs:
+  secret:
+    ## intentionaly left visible for demo purpose
+    argocdServerAdminPassword: $2b$10$WhRsvJswqhtqqkJucVckq.KFuX2nijmbiIcXbJOWeoYJbOsIqfH4a

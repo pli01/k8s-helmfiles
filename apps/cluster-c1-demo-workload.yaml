@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  # here is the argocd app name for the cluster
+  name: cluster-c1-demo-workload
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  destination:
+    # here is the name of the new workload cluster
+    name: c1-demo
+  source:
+    # replace with private repo , branch and path
+    repoURL: https://github.com/pli01/k8s-helmfiles.git
+    targetRevision: argocd
+    path: .
+    plugin:
+      name: helmfile-v1.0
+      env:
+        # here is the cluster name to configure
+        - name: ENV_NAME
+          value: "c1-demo"
+        - name: HELMFILE_FILE
+          value: "helmfile.d/cluster-workload"
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+#    automated:
+#      prune: true
+#      selfHeal: true
+#      allowEmpty: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2

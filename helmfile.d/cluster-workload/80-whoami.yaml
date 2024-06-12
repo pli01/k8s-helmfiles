@@ -1,0 +1,19 @@
+---
+bases:
+  - ../base/helmDefaults.yaml
+  - ../base/environments.yaml
+  - ../../environments/environments.yaml
+
+---
+helmfiles:
+- path: ../releases/whoami/helmfile.yaml
+  values:
+  - {{ toYaml .Values | nindent 4 }}
+{{- /*
+#
+# module-like URL for importing a remote directory and use a file in it as a nested-state file
+#- path: git::https://github.com/pli01/k8s-helmfiles.git@helmfile.d/releases/whoami/helmfile.yaml?ref=main
+#  values:
+#  - {{ toYaml .Values | nindent 4 }}
+*/ -}}
+

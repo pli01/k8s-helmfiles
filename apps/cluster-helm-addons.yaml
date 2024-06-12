@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cluster-helm-addons
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/foreground
+spec:
+  project: default
+  destination:
+    namespace: default
+    server: 'https://kubernetes.default.svc'
+  sources:
+  - repoURL: https://github.com/pli01/k8s-cluster-api-starter.git
+    path: openstack/deploy/helm-charts/capi-cluster-addons
+    targetRevision: argocd
+    helm:
+      releaseName: cluster-helm-addons
+      valueFiles:
+      - $values/environments/cluster-helm-addons.yaml
+  # replace with private repo
+  - repoURL: https://github.com/pli01/k8s-helmfiles
+    targetRevision: argocd
+    ref: values
+  syncPolicy:
+    automated:
+      prune: true
+      allowEmpty: true
+      selfHeal: true

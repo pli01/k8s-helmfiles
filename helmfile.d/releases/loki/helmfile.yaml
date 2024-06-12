@@ -1,7 +1,8 @@
 ---
 bases:
-  - ../../bases/helmDefaults.yaml
-  - ../../bases/environments.yaml
+  - ../../base/helmDefaults.yaml
+  - ../../base/environments.yaml
+  - ../../../environments/environments.yaml
 
 ---
 repositories:
@@ -13,12 +14,11 @@ releases:
   chart: grafana/loki
   version: {{ .Values.loki | get "chart_version" nil | quote }}
   namespace: {{ .Values.loki.namespace }}
+  installed: {{ .Values.loki.installed }}
   createNamespace: true
   missingFileHandler: Warn
-  installed: {{ .Values.loki.installed }}
-  needs:
-    # - kube-system/namespaces
-    # - "{{ .Values.prometheus.ingress_namespace }}/{{ .Values.prometheus.ingress_name }}"
   values:
     - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
-    - "env/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
+  secrets:
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"

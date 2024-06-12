@@ -1,0 +1,56 @@
+---
+bases:
+  - ../../base/helmDefaults.yaml
+  - ../../base/environments.yaml
+  - ../../../environments/environments.yaml
+
+---
+repositories:
+- name: jetstack
+  url: https://charts.jetstack.io
+
+releases:
+- name: cert-manager
+  chart: jetstack/cert-manager
+  version: {{ .Values.cert_manager | get "chart_version" nil | quote }}
+  installed: {{ .Values.cert_manager.installed }}
+  namespace: {{ .Values.cert_manager.namespace }}
+  createNamespace: true
+  missingFileHandler: Warn
+#  needs:
+#    - "{{ .Values.cert_manager.ingress_namespace }}/{{ .Values.cert_manager.ingress_name }}"
+  values:
+    - "../{{`{{ .Release.Name }}`}}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
+  secrets:
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"
+
+- name: cert-manager-secrets
+  chart: ../../../charts/raw
+  version: {{ .Values.cert_manager_secrets | get "chart_version" nil | quote }}
+  namespace: {{ .Values.cert_manager_secrets.namespace }}
+  installed: {{ .Values.cert_manager_secrets | get "installed" false }}
+  verify: false
+  createNamespace: true
+  missingFileHandler: Warn
+  values:
+    - "../{{`{{ .Release.Name }}`}}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
+  secrets:
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"
+
+- name: cert-manager-issuers
+  chart: ../../../charts/cert-manager-issuers
+  version: {{ .Values.cert_manager_issuer | get "chart_version" nil | quote }}
+  installed: {{ .Values.cert_manager_issuer.installed }}
+  namespace: {{ .Values.cert_manager_issuer.namespace }}
+  createNamespace: true
+  verify: false
+  missingFileHandler: Warn
+  needs:
+    - "{{ .Values.cert_manager.namespace }}/cert-manager"
+  values:
+    - "../{{`{{ .Release.Name }}`}}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
+  secrets:
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"

@@ -1,0 +1,44 @@
+---
+bases:
+  - ../../base/helmDefaults.yaml
+  - ../../base/environments.yaml
+  - ../../../environments/environments.yaml
+
+---
+repositories:
+- name: prometheus-community
+  url: https://prometheus-community.github.io/helm-charts
+
+releases:
+- name: prometheus-operator-crds
+  chart: prometheus-community/prometheus-operator-crds
+  version: {{ .Values.prometheus_operator_crds | get "chart_version" nil | quote }}
+  namespace: {{ .Values.prometheus_operator_crds.namespace }}
+  installed: {{ .Values.prometheus_operator_crds.installed }}
+  createNamespace: true
+
+- name: prometheus
+  chart: prometheus-community/kube-prometheus-stack
+  version: {{ .Values.prometheus | get "chart_version" nil | quote }}
+  namespace: {{ .Values.prometheus.namespace }}
+  installed: {{ .Values.prometheus.installed }}
+  createNamespace: true
+  missingFileHandler: Warn
+  values:
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
+  secrets:
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"
+
+- name: grafana-basic-auth
+  chart: ../../../charts/ingress-auth
+  version: {{ .Values.grafana_basic_auth | get "chart_version" nil | quote }}
+  namespace: {{ .Values.grafana_basic_auth | get "namespace" "ingress-nginx" }}
+  installed: {{ .Values.grafana_basic_auth | get "installed" false }}
+  verify: false
+  missingFileHandler: Warn
+  values:
+    - "../{{`{{ .Release.Name }}`}}/{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
+  secrets:
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"

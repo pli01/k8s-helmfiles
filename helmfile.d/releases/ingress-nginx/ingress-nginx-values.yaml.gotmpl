@@ -1,0 +1,69 @@
+{{- /*
+
+  See: https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
+
+*/ -}}
+imagePullSecrets:
+  - name: regcred
+controller:
+  ingressClassResource:
+    name: {{ .Values.ingress_nginx.ingress_class | quote }}
+  ingressClass: {{ .Values.ingress_nginx.ingress_class | quote }}
+  kind: {{ .Values.ingress_nginx.kind | quote }}
+{{- if eq .Values.ingress_nginx.kind "DaemonSet" }}
+  daemonset:
+    hostPorts:
+      http: 80
+      https: 443
+{{- else }}
+  hostPort:
+    enabled: true
+{{- end }}
+  publishService:
+    enabled: true
+  service:
+    enabled: true
+    externalTrafficPolicy: Local
+    loadBalancerClass: "io.cilium/l2-announcer"
+  config:
+    use-forwarded-headers: "true"
+{{- if hasKey .Values.ingress_nginx "config" }}
+    {{ toYaml ((.Values).ingress_nginx).config | nindent 4 }}
+{{- end }}
+
+{{- if hasKey .Values.ingress_nginx "annotations" }}
+  annotations: {{ toYaml ((.Values).ingress_nginx).annotations | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.ingress_nginx "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).ingress_nginx).node_selector | nindent 4 }}
+{{- else }}
+  nodeSelector: {}
+{{- end }}
+{{- if hasKey .Values.ingress_nginx "tolerations" }}
+  tolerations: {{ toYaml ((.Values).ingress_nginx).tolerations | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.ingress_nginx "default_ssl_certificate" }}
+  extraArgs:
+    default-ssl-certificate: "{{ .Values.ingress_nginx.ingress_namespace }}/{{ .Values.ingress_nginx.default_ssl_certificate }}"
+{{- end }}
+  admissionWebhooks:
+    patch:
+{{- if hasKey .Values.ingress_nginx "node_selector" }}
+      nodeSelector: {{ toYaml ((.Values).ingress_nginx).node_selector | nindent 8 }}
+{{- else }}
+      nodeSelector: {}
+{{- end }}
+{{- if hasKey .Values.ingress_nginx "tolerations" }}
+      tolerations: {{ toYaml ((.Values).ingress_nginx).tolerations | nindent 8 }}
+{{- end }}
+defaultBackend:
+{{- if hasKey .Values.ingress_nginx "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).ingress_nginx).node_selector | nindent 4 }}
+{{- else }}
+  nodeSelector: {}
+{{- end }}
+{{- if hasKey .Values.ingress_nginx "tolerations" }}
+  tolerations: {{ toYaml ((.Values).ingress_nginx).tolerations | nindent 4 }}
+{{- end }}
+podSecurityPolicy:
+  enabled: true

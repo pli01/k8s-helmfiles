@@ -1,0 +1,24 @@
+---
+bases:
+  - ../../base/helmDefaults.yaml
+  - ../../base/environments.yaml
+  - ../../../environments/environments.yaml
+
+---
+repositories:
+- name: extra-charts
+  url: git+https://github.com/pli01/k8s-helmfiles@charts?ref=main
+
+releases:
+- name: whoami
+  chart: extra-charts/whoami
+  installed: {{ .Values.whoami | get "installed" false }}
+  namespace: {{ .Values.whoami | get "namespace" "default" }}
+  verify: false
+  createNamespace: true
+  missingFileHandler: Warn
+  values:
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
+  secrets:
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"

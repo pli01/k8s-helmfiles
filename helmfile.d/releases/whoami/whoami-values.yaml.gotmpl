@@ -1,0 +1,25 @@
+ingress:
+  enabled: true
+{{- if hasKey .Values.whoami "ingress_class" }}
+  className: {{ .Values.whoami.ingress_class | quote }}
+{{- end }}
+  annotations:
+{{- if hasKey .Values.whoami "ingress_class" }}
+    kubernetes.io/ingress.class: {{ .Values.whoami.ingress_class | quote }}
+{{- end }}
+{{- if hasKey .Values.whoami "annotations" }}
+    {{ toYaml ((.Values).whoami).annotations | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.whoami "tls" }}
+  tls: {{ toYaml ((.Values).whoami).tls | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.whoami "hosts" }}
+  hosts: {{ toYaml ((.Values).whoami).hosts | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.whoami "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).whoami).node_selector | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.whoami "tolerations" }}
+  tolerations: {{ toYaml ((.Values).whoami).tolerations | nindent 4 }}
+{{- end }}
+

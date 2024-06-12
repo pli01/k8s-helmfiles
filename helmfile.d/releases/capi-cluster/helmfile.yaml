@@ -1,0 +1,26 @@
+---
+bases:
+  - ../../base/helmDefaults.yaml
+  - ../../base/environments.yaml
+  - ../../../environments/environments.yaml
+
+---
+repositories:
+- name: capi-cluster
+  url: git+https://github.com/pli01/k8s-cluster-api-starter.git@openstack/deploy/helm-charts/capi-cluster?ref=argocd
+
+releases:
+- name: {{ .Environment.Name }}
+  chart: capi-cluster/capi-cluster
+  namespace: default
+  verify: false
+  missingFileHandler: Warn
+  installed: {{ .Values.capi_cluster.installed }}
+  values:
+    - "../{{`{{ .Release.Name }}`}}/capi-cluster-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/capi-cluster/values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/capi-cluster/values.yaml"
+    #- "../../environments/{{ .Environment.Name }}/capi-cluster/values.yaml"
+  secrets:
+    - "../../../environments/{{ .Environment.Name }}/capi-cluster/secrets.enc.yaml"
+    # - "../../environments/{{ .Environment.Name }}/capi-cluster/secrets.enc.yaml"
