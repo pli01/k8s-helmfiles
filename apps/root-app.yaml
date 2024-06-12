@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-app
+  namespace: argocd
+spec:
+  destination:
+    name: ''
+    namespace: argocd
+    name: in-cluster
+  project: default
+  source:
+    # replace with private repo , branch and path
+    repoURL: https://github.com/pli01/k8s-helmfiles.git
+    path: .
+    targetRevision: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      allowEmpty: true
+      selfHeal: true
