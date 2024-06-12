@@ -29,7 +29,9 @@ jobs:
 
       - name: lint
         run: |
-          echo "lint files"
+          echo "Install local root CA"
+          time make local-root-ca
+          echo "Lint files"
           time make lint HELMFILE_FILE=helmfile.d/cluster-configure-core
           time make lint HELMFILE_FILE=helmfile.d/cluster-workload
 
@@ -40,16 +42,35 @@ jobs:
 
       - name: Test on local environment
         run: |
-          echo "Install local root CA"
-          time make local-root-ca
           echo "Sync releases"
           time make apply HELMFILE_FILE=helmfile.d/cluster-configure-core
-          time make apply HELMFILE_FILE=helmfile.d/cluster-workload
+          echo "Wait releases"
+          timeout=5
+          interval=1
+          test_result=1
+          set +e
+          until [ "$timeout" -le 0 -o "$test_result" -eq "0" ] ; do
+             time make apply HELMFILE_FILE=helmfile.d/cluster-workload
+             test_result=$?
+             if [ "$test_result" -gt 0 ] ;then
+               echo "workload is not accessible yet. Retrying in $interval/$timeout seconds: $test_result";
+               (( timeout-- ))
+               sleep $interval
+             fi
+          done
+          set -e
+          if [ "$test_result" -gt 0 ] ;then
+            test_status=ERROR
+            echo "$test_status: Timeout reached. workload is not accessible. result: $test_result"
+            return $test_result
+          fi
           helm list -A
+          kubectl get pod -A
           echo "Test local url"
           time make ci-local-tests
           echo "Destroy resources"
-          time make destroy
+          time make destroy HELMFILE_FILE=helmfile.d/cluster-workload
+          time make destroy HELMFILE_FILE=helmfile.d/cluster-configure-core
 
       - name: Teardown
         if: always()
