@@ -1,0 +1,29 @@
+---
+ingress:
+  enabled: true
+{{- if hasKey .Values.demo_counter "ingress_class" }}
+  className: {{ .Values.demo_counter.ingress_class | quote }}
+{{- end }}
+  annotations:
+{{- if hasKey .Values.demo_counter "ingress_class" }}
+    kubernetes.io/ingress.class: {{ .Values.demo_counter.ingress_class | quote }}
+{{- end }}
+{{- if hasKey .Values.demo_counter "annotations" }}
+    {{ toYaml ((.Values).demo_counter).annotations | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.demo_counter "tls" }}
+  tls: {{ toYaml ((.Values).demo_counter).tls | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.demo_counter "hosts" }}
+  hosts: {{ toYaml ((.Values).demo_counter).hosts | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.demo_counter "node_selector" }}
+  nodeSelector: {{ toYaml ((.Values).demo_counter).node_selector | nindent 4 }}
+{{- end }}
+{{- if hasKey .Values.demo_counter "tolerations" }}
+  tolerations: {{ toYaml ((.Values).demo_counter).tolerations | nindent 4 }}
+{{- end }}
+
+{{- if hasKey .Values.demo_counter "storageClassName" }}
+storageClassName: {{ .Values.demo_counter.storageClassName }}
+{{- end }}

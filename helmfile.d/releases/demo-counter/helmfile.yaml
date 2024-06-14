@@ -1,0 +1,20 @@
+---
+bases:
+  - ../../base/helmDefaults.yaml
+  - ../../base/environments.yaml
+  - ../../../environments/environments.yaml
+
+---
+releases:
+- name: demo-counter
+  chart: ../../../charts/demo-counter
+  namespace: {{ .Values.demo_counter | get "namespace" "default" }}
+  installed: {{ .Values.demo_counter | get "installed" false }}
+  verify: false
+  createNamespace: true
+  missingFileHandler: Warn
+  values:
+    - "{{`{{ .Release.Name }}`}}-values.yaml.gotmpl"
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/values.yaml.gotmpl"
+  secrets:
+    - "../../../environments/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}/secrets.enc.yaml"

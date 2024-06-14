@@ -12,6 +12,7 @@ workload_namespaces:
     promtail: {}
     loki: {}
     whoami: {}
+    demo-counter: {}
 
 cert_manager:
   installed: true
@@ -122,3 +123,25 @@ whoami:
 #    nginx.ingress.kubernetes.io/auth-secret-type: auth-file
 #    nginx.ingress.kubernetes.io/auth-realm: "Progress Authentication"
 
+demo_counter:
+  installed: true
+  #storageClassName: cinder-default
+  ingress_class: nginx
+  tls:
+    - hosts:
+      - counter.127.0.0.1.nip.io
+      secretName: counter.127.0.0.1.nip.io
+  hosts:
+    - host: counter.127.0.0.1.nip.io
+      paths:
+        - path: /
+          pathType: Prefix
+  annotations:
+    # generate ssl certificate
+    # cert-manager.io/cluster-issuer: "selfsigned-cluster-issuer"
+    cert-manager.io/cluster-issuer: "ca-cluster-issuer"
+    # enable basic auth
+#    nginx.ingress.kubernetes.io/auth-type: basic
+#    nginx.ingress.kubernetes.io/auth-secret: ingress-nginx/basic-auth
+#    nginx.ingress.kubernetes.io/auth-secret-type: auth-file
+#    nginx.ingress.kubernetes.io/auth-realm: "Progress Authentication"

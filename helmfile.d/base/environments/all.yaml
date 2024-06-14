@@ -99,4 +99,6 @@ promtail:
 whoami:
   installed: false
   namespace: "whoami"
-
+demo_counter:
+  installed: false
+  namespace: "demo-counter"

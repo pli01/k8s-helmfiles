@@ -1,32 +1,35 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: demo-whoami
+  name: demo-counter
   namespace: argocd
 spec:
   project: default
   source:
-    path: charts/whoami
+    path: charts/demo-counter
     repoURL: 'https://github.com/pli01/k8s-helmfiles.git'
-    targetRevision: HEAD
+    targetRevision: demo-app
     helm:
-      releaseName: demo-whoami
+      releaseName: demo-counter
       values: |
+        storageClassName: cinder-default
         ingress:
           tls:
             - hosts:
-              - myapp.c1-demo.mydomain.org
-              secretName: myapp.c1-demo.mydomain.org
+              - counter.c1-demo.mydomain.org
+              secretName: counter.c1-demo.mydomain.org
           hosts:
-            - host: myapp.c1-demo.demo.mydomain.org
+            - host: counter.c1-demo.mydomain.org
               paths:
                 - path: /
                   pathType: Prefix
           annotations:
-            cert-manager.io/cluster-issuer: letsencrypt-production
+            cert-manager.io/cluster-issuer: letsencrypt-staging
             nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
             nginx.ingress.kubernetes.io/ssl-redirect: "true"
-
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: default
+    namespace: demo-counter
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

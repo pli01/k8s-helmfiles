@@ -1,5 +1,8 @@
 ---
 # helmfile environment values
+capi_cluster:
+  installed: true
+
 cert_manager:
   installed: true
 
@@ -117,3 +120,26 @@ whoami:
   hostname: whoami.c1-demo.mydomain.org
   # whitelist_source_range: x.x.x.x/32,x.x.x.x/32
   certmanager_cluster_issuer: "letsencrypt-staging"
+
+
+demo_counter:
+  installed: true
+  storageClassName: cinder-default
+  ingress_class: nginx
+  tls:
+    - hosts:
+      - counter.c1-demo.mydomain.org
+      secretName: counter.c1-demo.mydomain.org
+  hosts:
+    - host: counter.c1-demo.mydomain.org
+      paths:
+        - path: /
+          pathType: Prefix
+  annotations:
+    # generate ssl certificate
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    # enable basic auth
+#    nginx.ingress.kubernetes.io/auth-type: basic
+#    nginx.ingress.kubernetes.io/auth-secret: ingress-nginx/basic-auth
+#    nginx.ingress.kubernetes.io/auth-secret-type: auth-file
+#    nginx.ingress.kubernetes.io/auth-realm: "Progress Authentication"
