@@ -27,6 +27,7 @@ controller:
     loadBalancerClass: "io.cilium/l2-announcer"
   config:
     use-forwarded-headers: "true"
+    ssl-reject-handshake: "true"
 {{- if hasKey .Values.ingress_nginx "config" }}
     {{ toYaml ((.Values).ingress_nginx).config | nindent 4 }}
 {{- end }}
