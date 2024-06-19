@@ -23,6 +23,10 @@ serviceAccount:
   name: ""
 
 storageClassName: "standard"
+postgres:
+  nodeSelector: {}
+#      kubernetes.io/hostname: worker_name
+
 podAnnotations: {}
 podLabels: {}
 
