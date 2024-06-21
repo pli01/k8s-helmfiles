@@ -92,7 +92,7 @@ openstack:
       sizeGiB: 30
       type: __DEFAULT__
   workers:
-    - name: md-0
+    md-0:
       version: v1.29.5
       replicas: 2
       image: ubuntu-2204-kube-v1.29.5
@@ -109,7 +109,7 @@ openstack:
         type: __DEFAULT__
 
 ## Add workers node
-#    - name: md-1
+#    md-1:
 #      version: v1.29.5
 #      replicas: 0
 #      image: ubuntu-2204-kube-v1.29.5
