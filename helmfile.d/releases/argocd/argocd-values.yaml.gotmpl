@@ -45,7 +45,7 @@ repoServer:
   extraContainers:
     - name: helmfile
       # use image from https://github.com/helmfile/helmfile
-      image: ghcr.io/helmfile/helmfile-debian-stable-slim:v0.162.0
+      image: ghcr.io/helmfile/helmfile-debian-stable-slim:v0.167.1
       # Entrypoint should be Argo CD lightweight CMP server i.e. argocd-cmp-server
       command:
         - /var/run/argocd/argocd-cmp-server
